@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1E1E2E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Bend → Austin Road Trip</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --desert-sand: #F2E6D9;
+    --warm-clay: #C4734F;
+    --deep-rust: #8B3A2A;
+    --sage: #7A8B6F;
+    --dark-sage: #4A5A40;
+    --sky: #5B9BD5;
+    --night: #1E1E2E;
+    --cream: #FFF8F0;
+    --gold: #D4A843;
+    --pale-gold: #F5ECD7;
+    --green: #8BC58B;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--night);
+    color: var(--cream);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* ---- NAV ---- */
+  .day-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(30,30,46,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 0 0.5rem;
+  }
+  .day-nav::-webkit-scrollbar { display: none; }
+
+  .day-nav a {
+    flex-shrink: 0;
+    padding: 0.75rem 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,248,240,0.5);
+    text-decoration: none;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .day-nav a:hover, .day-nav a.active {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    position: relative;
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(165deg, #1a1a2e 0%, #2d1b30 25%, #4a2040 45%, #c4734f 70%, #d4a843 85%, #f2e6d9 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(to top, var(--night), transparent);
+    z-index: 1;
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  .hero h1 {
+    font-size: clamp(2.8rem, 12vw, 6.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.25em;
+  }
+  .hero h1 .from { color: var(--sage); }
+  .hero h1 .arrow { color: var(--gold); font-weight: 300; }
+  .hero h1 .to { color: var(--warm-clay); }
+
+  .hero-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(0.75rem, 2.5vw, 1.1rem);
+    color: var(--desert-sand);
+    opacity: 0.85;
+    margin-bottom: 2rem;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 2rem;
+  }
+  @media (min-width: 500px) { .hero-stats { grid-template-columns: repeat(4, auto); } }
+
+  .hero-stat { text-align: center; }
+  .hero-stat .num {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .hero-stat .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--desert-sand);
+    opacity: 0.7;
+    margin-top: 0.25rem;
+  }
+
+  .van-badge {
+    margin-top: 2.5rem;
+    display: inline-block;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 100px;
+    padding: 0.6rem 1.25rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--desert-sand);
+    backdrop-filter: blur(10px);
+  }
+
+  /* ---- ROUTE OVERVIEW ---- */
+  .overview { padding: 3rem 1.5rem 2rem; }
+
+  .route-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow-x: auto;
+    gap: 0.5rem;
+  }
+  .route-line::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--sage), var(--gold), var(--warm-clay), var(--deep-rust));
+  }
+  .route-stop { position: relative; z-index: 1; text-align: center; flex-shrink: 0; }
+  .route-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid var(--night);
+    margin: 0 auto 0.4rem;
+  }
+  .route-stop:first-child .route-dot { background: var(--sage); }
+  .route-stop:last-child .route-dot { background: var(--warm-clay); width: 18px; height: 18px; }
+  .route-stop .city { font-weight: 600; font-size: 0.78rem; }
+  .route-stop .date { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gold); opacity: 0.8; }
+
+  /* ---- SECTIONS ---- */
+  .days { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+
+  .day-card, .prep-card {
+    margin-bottom: 3rem;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #252535;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .day-header, .prep-header { padding: 1.5rem; position: relative; overflow: hidden; }
+  .day-1 .day-header { background: linear-gradient(135deg, #2d3a2d, #3a4a35); }
+  .day-2 .day-header { background: linear-gradient(135deg, #3a2d2d, #4a3535); }
+  .day-3 .day-header { background: linear-gradient(135deg, #2d2d3a, #35354a); }
+  .day-4 .day-header { background: linear-gradient(135deg, #3a352d, #4a4535); }
+  .prep-header { background: linear-gradient(135deg, #2d2d3a, #35354a); }
+
+  .day-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+  .day-title {
+    font-size: clamp(1.4rem, 5vw, 2.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+  }
+  .day-meta { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .day-meta-item {
+    display: flex; align-items: center; gap: 0.3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--desert-sand); opacity: 0.8;
+  }
+
+  .day-route {
+    padding: 1rem 1.5rem;
+    background: rgba(0,0,0,0.2);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--desert-sand);
+    opacity: 0.75;
+    line-height: 1.6;
+  }
+
+  .day-body { padding: 1.25rem 1.5rem 1.5rem; }
+
+  /* ---- WEATHER ---- */
+  .weather-strip {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .weather-cell {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    background: rgba(91,155,213,0.08);
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.05);
+  }
+  .weather-cell:last-child { border-right: none; }
+  .weather-cell .wx-location {
+    font-size: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--sky);
+    margin-bottom: 0.35rem;
+  }
+  .weather-cell .wx-icon { font-size: 1.5rem; margin-bottom: 0.25rem; line-height: 1; }
+  .weather-cell .wx-temps { font-size: 0.95rem; font-weight: 700; }
+  .weather-cell .wx-temps .wx-lo { font-weight: 400; font-size: 0.78rem; color: rgba(255,248,240,0.45); }
+  .weather-cell .wx-desc { font-size: 0.65rem; color: rgba(255,248,240,0.55); margin-top: 0.15rem; }
+  .weather-cell .wx-rain { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--sky); opacity: 0.7; margin-top: 0.2rem; }
+  .weather-note {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,248,240,0.25);
+    text-align: right;
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  /* ---- STOP SECTIONS ---- */
+  .stop-section { margin-bottom: 1.5rem; }
+  .stop-section:last-child { margin-bottom: 0; }
+  .stop-section h3 {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.78rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .stop-section h3 .si { font-size: 1rem; }
+
+  .fuel h3 { color: var(--sky); }
+  .food h3 { color: var(--warm-clay); }
+  .sights h3 { color: var(--gold); }
+  .notes h3 { color: var(--sage); }
+  .resupply h3 { color: var(--green); }
+  .lodging h3 { color: var(--desert-sand); }
+
+  .stop-list { list-style: none; }
+  .stop-list li {
+    position: relative;
+    padding: 0.65rem 0 0.65rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: rgba(255,248,240,0.85);
+  }
+  .stop-list li:last-child { border-bottom: none; }
+  .stop-list li::before {
+    content: '';
+    position: absolute; left: 0; top: 0.95rem;
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .fuel .stop-list li::before { background: var(--sky); }
+  .food .stop-list li::before { background: var(--warm-clay); }
+  .sights .stop-list li::before { background: var(--gold); }
+  .notes .stop-list li::before { background: var(--sage); }
+  .resupply .stop-list li::before { background: var(--green); }
+
+  .stop-name { font-weight: 600; color: var(--cream); }
+  .stop-mile {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold); opacity: 0.7;
+    margin-left: 0.3rem;
+  }
+  .stop-desc {
+    display: block;
+    font-size: 0.78rem;
+    color: rgba(255,248,240,0.5);
+    margin-top: 0.1rem;
+  }
+
+  /* ---- MAP LINK ---- */
+  a.map-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--sky);
+    opacity: 0.8;
+    text-decoration: none;
+    margin-top: 0.2rem;
+    padding: 0.2rem 0.5rem 0.2rem 0;
+    border-radius: 4px;
+    transition: opacity 0.15s;
+    letter-spacing: 0.02em;
+  }
+  a.map-link:hover, a.map-link:active { opacity: 1; text-decoration: underline; }
+  a.map-link .pin { font-size: 0.85rem; font-style: normal; }
+
+  .warning-tag {
+    display: inline-block;
+    background: rgba(196,115,79,0.2);
+    color: var(--warm-clay);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    padding: 0.12rem 0.45rem;
+    border-radius: 4px;
+    margin-left: 0.25rem;
+  }
+
+  /* ---- OVERNIGHT ---- */
+  .overnight {
+    background: rgba(0,0,0,0.15);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .overnight h3 {
+    color: var(--desert-sand) !important;
+    font-size: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .overnight-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  @media (min-width: 600px) { .overnight-options { grid-template-columns: repeat(2, 1fr); } }
+
+  .overnight-opt {
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .overnight-opt .opt-name { font-weight: 600; font-size: 0.82rem; }
+  .overnight-opt .opt-price { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--gold); }
+  .overnight-opt .opt-desc { font-size: 0.72rem; color: rgba(255,248,240,0.5); margin-top: 0.15rem; }
+  .overnight-opt .opt-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    margin-top: 0.3rem;
+  }
+  .opt-tag.rv { background: rgba(139,197,139,0.15); color: var(--green); }
+  .opt-tag.hotel { background: rgba(212,168,67,0.15); color: var(--gold); }
+
+  /* ---- CHECKLIST ---- */
+  .checklist-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 600px) { .checklist-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .checklist-group h4 {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .checklist-group ul { list-style: none; }
+  .checklist-group li {
+    padding: 0.35rem 0 0.35rem 1.75rem;
+    font-size: 0.82rem;
+    color: rgba(255,248,240,0.75);
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .checklist-group li::before {
+    content: '';
+    position: absolute; left: 0; top: 0.5rem;
+    width: 14px; height: 14px;
+    border: 1.5px solid rgba(255,255,255,0.25);
+    border-radius: 3px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .checklist-group li.checked {
+    color: rgba(255,248,240,0.35);
+    text-decoration: line-through;
+  }
+  .checklist-group li.checked::before {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+
+  .prep-body { padding: 1.25rem 1.5rem 1.5rem; }
+
+  /* ---- ALERT BANNER ---- */
+  .alert-banner {
+    background: rgba(196,115,79,0.12);
+    border-left: 3px solid var(--warm-clay);
+    padding: 1rem 1.25rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: var(--desert-sand);
+    line-height: 1.6;
+  }
+  .alert-banner strong { color: var(--warm-clay); }
+  .alert-banner .shop-item { display: block; margin-top: 0.3rem; }
+  .alert-banner .shop-name { color: var(--cream); font-weight: 600; }
+
+  /* ---- BUDGET ---- */
+  .budget-bar {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+    padding: 1.5rem;
+    background: #252535;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .budget-bar h2 { font-size: 1.1rem; margin-bottom: 1.25rem; color: var(--gold); }
+  .budget-items { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  @media (min-width: 600px) { .budget-items { grid-template-columns: repeat(5, 1fr); } }
+  .budget-item { text-align: center; }
+  .budget-item .amount { font-size: 1.5rem; font-weight: 700; }
+  .budget-item .cat {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: rgba(255,248,240,0.5);
+    margin-top: 0.2rem;
+  }
+  .budget-item.total { grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem; }
+  .budget-item.total .amount { color: var(--gold); }
+
+  /* ---- PACKING ---- */
+  .packing-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+  @media (min-width: 500px) { .packing-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .packing-cat h4 {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--sage); margin-bottom: 0.6rem;
+  }
+  .packing-cat ul { list-style: none; }
+  .packing-cat li {
+    padding: 0.2rem 0 0.2rem 1rem;
+    font-size: 0.78rem;
+    color: rgba(255,248,240,0.6);
+    position: relative;
+  }
+  .packing-cat li::before {
+    content: '~'; position: absolute; left: 0; color: var(--sage); opacity: 0.5;
+  }
+
+  /* ---- FOOTER ---- */
+  .trip-footer {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: rgba(255,248,240,0.25);
+    line-height: 1.8;
+  }
+
+  /* ---- INSTALL BANNER ---- */
+  .install-banner {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(37,37,53,0.96);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding: 1rem 1.5rem;
+    z-index: 200;
+    text-align: center;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+  .install-banner p { font-size: 0.82rem; color: var(--desert-sand); margin-bottom: 0.75rem; }
+  .install-btn {
+    background: var(--gold);
+    color: var(--night);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .install-dismiss {
+    background: none; border: none;
+    color: rgba(255,248,240,0.4);
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-left: 1rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<nav class="day-nav" id="nav">
+  <a href="#hero">Trip</a>
+  <a href="#prep">Prep</a>
+  <a href="#day1">Day 1</a>
+  <a href="#day2">Day 2</a>
+  <a href="#day3">Day 3</a>
+  <a href="#day4">Day 4</a>
+  <a href="#budget">Budget</a>
+  <a href="#packing">Packing</a>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <h1>
+      <span class="from">Bend</span>
+      <span class="arrow"> &rarr; </span>
+      <span class="to">Austin</span>
+    </h1>
+    <p class="hero-sub">April 15 &ndash; 20, 2026 &nbsp;|&nbsp; Southern Route</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">1,835</div><div class="label">Miles</div></div>
+      <div class="hero-stat"><div class="num">4</div><div class="label">Driving Days</div></div>
+      <div class="hero-stat"><div class="num">6</div><div class="label">States</div></div>
+      <div class="hero-stat"><div class="num">~29</div><div class="label">Hours</div></div>
+    </div>
+    <div class="van-badge">1993 Chevy G20 Horizon &bull; 5.7L V8 &bull; Class B</div>
+  </div>
+</section>
+
+<!-- ========== ROUTE OVERVIEW ========== -->
+<section class="overview">
+  <div class="route-line">
+    <div class="route-stop"><div class="route-dot"></div><div class="city">Bend, OR</div><div class="date">Apr 15&ndash;17</div></div>
+    <div class="route-stop"><div class="route-dot"></div><div class="city">Ely, NV</div><div class="date">Apr 17</div></div>
+    <div class="route-stop"><div class="route-dot"></div><div class="city">Flagstaff, AZ</div><div class="date">Apr 18</div></div>
+    <div class="route-stop"><div class="route-dot"></div><div class="city">Las Cruces, NM</div><div class="date">Apr 19</div></div>
+    <div class="route-stop"><div class="route-dot"></div><div class="city">Austin, TX</div><div class="date">Apr 20</div></div>
+  </div>
+</section>
+
+<!-- ========== PREP DAYS ========== -->
+<div class="days">
+
+<div class="prep-card" id="prep">
+  <div class="prep-header">
+    <div class="day-number">Wednesday, April 15</div>
+    <h2 class="day-title">Fly into Bend</h2>
+    <p style="color: var(--desert-sand); opacity: 0.7; font-size: 0.85rem; margin-top: 0.4rem;">Arrive, rest up, get ready for van pickup.</p>
+    <div class="weather-strip" style="margin-top: 1rem;">
+      <div class="weather-cell">
+        <div class="wx-location">Wed Night</div>
+        <div class="wx-icon">🌧</div>
+        <div class="wx-temps">45°F <span class="wx-lo">/ 34°F</span></div>
+        <div class="wx-desc">Light drizzle possible</div>
+        <div class="wx-rain">18% precip</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="prep-card">
+  <div class="prep-header">
+    <div class="day-number">Thursday, April 16</div>
+    <h2 class="day-title">Van Prep Day</h2>
+    <p style="color: var(--desert-sand); opacity: 0.7; font-size: 0.85rem; margin-top: 0.4rem;">Pick up van, systems checks, shop for supplies, pack up.</p>
+    <div class="weather-strip" style="margin-top: 1rem;">
+      <div class="weather-cell">
+        <div class="wx-location">Bend, OR</div>
+        <div class="wx-icon">⛅</div>
+        <div class="wx-temps">46°F <span class="wx-lo">/ 29°F</span></div>
+        <div class="wx-desc">Overcast, clearing</div>
+        <div class="wx-rain">7% precip</div>
+      </div>
+    </div>
+  </div>
+  <div class="prep-body">
+    <div class="checklist-grid">
+      <div class="checklist-group">
+        <h4>Morning: Pickup</h4>
+        <ul>
+          <li>Complete purchase &amp; sign paperwork</li>
+          <li>Walk through all systems with seller</li>
+          <li>Inventory what comes with the van</li>
+          <li>Adjust mirrors &amp; seats (both drivers)</li>
+          <li>Drive around Bend 30&ndash;60 min</li>
+        </ul>
+      </div>
+      <div class="checklist-group">
+        <h4>Afternoon: Shop &amp; Stock</h4>
+        <ul>
+          <li>Drinking water (2&ndash;3 gal)</li>
+          <li>Cooler + ice + road drinks</li>
+          <li>Road snacks (jerky, trail mix, fruit, bars)</li>
+          <li>Phone mount + 12V charger</li>
+          <li>Spare coolant (1 gal) + oil (1 qt 10W-30)</li>
+          <li>Flashlight, first aid kit, basic tools</li>
+          <li>Fill gas tank &amp; check all 5 tires</li>
+        </ul>
+      </div>
+      <div class="checklist-group">
+        <h4>Systems Check</h4>
+        <ul>
+          <li>Heater / furnace (need it in Flagstaff)</li>
+          <li>Water pump &mdash; check for leaks</li>
+          <li>Propane: stove, water heater</li>
+          <li>Fridge (propane &amp; 12V)</li>
+          <li>All interior &amp; exterior lights</li>
+          <li>Locate fuse box &amp; breaker panel</li>
+        </ul>
+      </div>
+      <div class="checklist-group">
+        <h4>Digital Prep</h4>
+        <ul>
+          <li>Download offline maps: OR, NV, AZ, NM, TX</li>
+          <li>Save campground phone numbers</li>
+          <li>Share route &amp; ETAs with someone at home</li>
+          <li>Confirm insurance coverage is active</li>
+        </ul>
+      </div>
+    </div>
+    <div class="alert-banner" style="margin-top: 1.25rem;">
+      <strong>Where to shop in Bend:</strong>
+      <span class="shop-item"><span class="shop-name">Walmart</span> &mdash; <a class="map-link" href="" data-addr="20120 Pinebrook Blvd, Bend, OR 97702"><i class="pin">📍</i>20120 Pinebrook Blvd</a> <em>(cooler, snacks, water, first aid)</em></span>
+      <span class="shop-item"><span class="shop-name">Fred Meyer</span> &mdash; <a class="map-link" href="" data-addr="61535 S Hwy 97, Bend, OR 97702"><i class="pin">📍</i>61535 S Hwy 97</a> <em>(one-stop alternative)</em></span>
+      <span class="shop-item"><span class="shop-name">O'Reilly Auto Parts</span> &mdash; <a class="map-link" href="" data-addr="1259 NE 3rd St, Bend, OR 97701"><i class="pin">📍</i>1259 NE 3rd St</a> <em>(coolant, oil, tire gauge)</em></span>
+      <span class="shop-item"><span class="shop-name">NAPA Auto Parts</span> &mdash; <a class="map-link" href="" data-addr="550 SE 3rd St, Bend, OR 97702"><i class="pin">📍</i>550 SE 3rd St</a> <em>(alt auto parts)</em></span>
+      <span class="shop-item"><span class="shop-name">Bi-Mart</span> &mdash; <a class="map-link" href="" data-addr="2255 NE Hwy 20, Bend, OR 97701"><i class="pin">📍</i>2255 NE Hwy 20</a> <em>(tools, outdoor supplies)</em></span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DAY 1 ========== -->
+<div class="day-card day-1" id="day1">
+  <div class="day-header">
+    <div class="day-number">Day 1 &mdash; Friday, April 17</div>
+    <h2 class="day-title">Bend, OR &rarr; Ely, NV</h2>
+    <div class="day-meta">
+      <div class="day-meta-item"><span>&#9672;</span> ~500 mi</div>
+      <div class="day-meta-item"><span>&#9719;</span> ~8.5 hrs</div>
+      <div class="day-meta-item"><span>&#9650;</span> High desert 4&ndash;5k ft</div>
+    </div>
+  </div>
+  <div class="day-route">US-97 S &rarr; US-20 E (Burns) &rarr; OR-78 S &rarr; US-95 S &rarr; I-80 E (Winnemucca) &rarr; US-93 S &rarr; Ely</div>
+  <div class="day-body">
+    <div class="weather-strip">
+      <div class="weather-cell"><div class="wx-location">Bend</div><div class="wx-icon">⛅</div><div class="wx-temps">48°F <span class="wx-lo">/ 33°F</span></div><div class="wx-desc">Partly cloudy</div><div class="wx-rain">6%</div></div>
+      <div class="weather-cell"><div class="wx-location">Winnemucca</div><div class="wx-icon">🌦</div><div class="wx-temps">52°F <span class="wx-lo">/ 40°F</span></div><div class="wx-desc">Drizzle possible</div><div class="wx-rain">6%</div></div>
+      <div class="weather-cell"><div class="wx-location">Ely</div><div class="wx-icon">🌨</div><div class="wx-temps">44°F <span class="wx-lo">/ 36°F</span></div><div class="wx-desc">Snow flurries</div><div class="wx-rain">9%</div></div>
+    </div>
+    <div class="weather-note">Open-Meteo forecast &bull; Apr 9</div>
+
+    <div class="stop-section fuel">
+      <h3><span class="si">⛽</span> Fuel Stops</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Burns, OR</span><span class="stop-mile">mi 130</span><span class="warning-tag">Must fill</span><span class="stop-desc">Last reliable fuel before 200-mi remote stretch</span></li>
+        <li><span class="stop-name">Orovada, NV</span><span class="stop-mile">mi 340</span><span class="stop-desc">Small community, don't skip</span></li>
+        <li><span class="stop-name">Winnemucca, NV</span><span class="stop-mile">mi 420</span><span class="stop-desc">Full services on I-80. Top off and stretch.</span></li>
+        <li><span class="stop-name">Ely, NV</span><span class="stop-mile">mi 500</span><span class="stop-desc">Multiple stations, full services</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section food">
+      <h3><span class="si">🍽</span> Where to Eat</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Pine Room Restaurant</span><span class="stop-mile">Burns</span><a class="map-link" href="" data-addr="543 W Monroe St, Burns, OR 97720"><i class="pin">📍</i>543 W Monroe St, Burns, OR</a><span class="stop-desc">Classic local spot, good lunch stop</span></li>
+        <li><span class="stop-name">The Martin Hotel</span><span class="stop-mile">Winnemucca</span><a class="map-link" href="" data-addr="94 W Railroad St, Winnemucca, NV 89445"><i class="pin">📍</i>94 W Railroad St, Winnemucca, NV</a><span class="stop-desc">Basque restaurant since 1898 &mdash; family-style soup, beans, bread, salad, main course. Don't miss this.</span></li>
+        <li><span class="stop-name">Economy Drug</span><span class="stop-mile">Ely</span><a class="map-link" href="" data-addr="707 Aultman St, Ely, NV 89301"><i class="pin">📍</i>707 Aultman St, Ely, NV</a><span class="stop-desc">Old-fashioned lunch counter, or Cellblock Steakhouse at 211 5th St</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section resupply">
+      <h3><span class="si">🛒</span> Resupply</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">Winnemucca</span><a class="map-link" href="" data-addr="3010 Potato Rd, Winnemucca, NV 89445"><i class="pin">📍</i>3010 Potato Rd, Winnemucca, NV</a><span class="stop-desc">Restock ice, drinks, snacks if needed</span></li>
+        <li><span class="stop-name">Ridley's Family Markets</span><span class="stop-mile">Ely</span><a class="map-link" href="" data-addr="1689 Great Basin Blvd, Ely, NV 89301"><i class="pin">📍</i>1689 Great Basin Blvd, Ely, NV</a><span class="stop-desc">Full grocery store for cooler restock</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section notes">
+      <h3><span class="si">⚠️</span> Road Notes</h3>
+      <ul class="stop-list">
+        <li>Burns to Winnemucca: <strong>no cell service ~200 mi</strong>. Download offline maps.</li>
+        <li>Watch for open-range cattle and antelope on US-95</li>
+        <li>Longest day &mdash; both drivers fresh. Swap at Winnemucca (~mi 420)</li>
+      </ul>
+    </div>
+
+    <div class="overnight">
+      <h3><span class="si">🌙</span> Overnight in Ely</h3>
+      <div class="overnight-options">
+        <div class="overnight-opt"><div class="opt-name">KOA Ely Journey</div><div class="opt-price">~$50&ndash;60/night</div><div class="opt-desc">Full hookups, 30/50 amp, pull-throughs</div><a class="map-link" href="" data-addr="1596 US-93, Ely, NV 89301"><i class="pin">📍</i>1596 US-93, Ely, NV</a><span class="opt-tag rv">RV Park</span></div>
+        <div class="overnight-opt"><div class="opt-name">Valley View RV Park</div><div class="opt-price">~$35/night</div><div class="opt-desc">20 full hookup sites, showers, laundry, propane</div><a class="map-link" href="" data-addr="65 N McGill Hwy, Ely, NV 89301"><i class="pin">📍</i>65 N McGill Hwy, Ely, NV</a><span class="opt-tag rv">RV Park</span></div>
+        <div class="overnight-opt"><div class="opt-name">Hotel Nevada</div><div class="opt-price">~$50&ndash;80/night</div><div class="opt-desc">Historic 1929 hotel, casino, rooftop views</div><a class="map-link" href="" data-addr="501 Aultman St, Ely, NV 89301"><i class="pin">📍</i>501 Aultman St, Ely, NV</a><span class="opt-tag hotel">Hotel</span></div>
+        <div class="overnight-opt"><div class="opt-name">Jailhouse Motel</div><div class="opt-price">~$60&ndash;80/night</div><div class="opt-desc">Budget-friendly, clean, Cellblock Steakhouse</div><a class="map-link" href="" data-addr="211 5th St, Ely, NV 89301"><i class="pin">📍</i>211 5th St, Ely, NV</a><span class="opt-tag hotel">Hotel</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DAY 2 ========== -->
+<div class="day-card day-2" id="day2">
+  <div class="day-header">
+    <div class="day-number">Day 2 &mdash; Saturday, April 18</div>
+    <h2 class="day-title">Ely, NV &rarr; Flagstaff, AZ</h2>
+    <div class="day-meta">
+      <div class="day-meta-item"><span>&#9672;</span> ~420 mi</div>
+      <div class="day-meta-item"><span>&#9719;</span> ~6.5&ndash;7 hrs</div>
+      <div class="day-meta-item"><span>&#9650;</span> Climbs to 7,000 ft</div>
+    </div>
+  </div>
+  <div class="day-route">US-93 S (Caliente) &rarr; I-15 S briefly &rarr; I-11 / US-93 S (Vegas bypass) &rarr; I-40 E &rarr; Flagstaff</div>
+  <div class="day-body">
+    <div class="weather-strip">
+      <div class="weather-cell"><div class="wx-location">Ely</div><div class="wx-icon">⛅</div><div class="wx-temps">47°F <span class="wx-lo">/ 35°F</span></div><div class="wx-desc">Overcast</div><div class="wx-rain">13%</div></div>
+      <div class="weather-cell"><div class="wx-location">Kingman</div><div class="wx-icon">🌤</div><div class="wx-temps">68°F <span class="wx-lo">/ 48°F</span></div><div class="wx-desc">Overcast, dry</div><div class="wx-rain">1%</div></div>
+      <div class="weather-cell"><div class="wx-location">Flagstaff</div><div class="wx-icon">🌤</div><div class="wx-temps">57°F <span class="wx-lo">/ 36°F</span></div><div class="wx-desc">Mostly clear</div><div class="wx-rain">3%</div></div>
+    </div>
+    <div class="weather-note">Open-Meteo forecast &bull; Apr 9</div>
+
+    <div class="stop-section fuel">
+      <h3><span class="si">⛽</span> Fuel Stops</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Caliente, NV</span><span class="stop-mile">mi 100</span><span class="stop-desc">Small town, top off here</span></li>
+        <li><span class="stop-name">Alamo / Ash Springs, NV</span><span class="stop-mile">mi 170</span><span class="stop-desc">Desert stops with fuel &mdash; don't pass by</span></li>
+        <li><span class="stop-name">Las Vegas bypass</span><span class="stop-mile">mi 270</span><span class="stop-desc">Fuel near I-11 / US-93 junction</span></li>
+        <li><span class="stop-name">Kingman, AZ</span><span class="stop-mile">mi 320</span><span class="stop-desc">Major stop, all services</span></li>
+        <li><span class="stop-name">Flagstaff, AZ</span><span class="stop-mile">mi 420</span><span class="stop-desc">Full services</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section food">
+      <h3><span class="si">🍽</span> Where to Eat</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Knotty Pine Restaurant</span><span class="stop-mile">Caliente</span><a class="map-link" href="" data-addr="690 Front St, Caliente, NV 89008"><i class="pin">📍</i>690 Front St, Caliente, NV</a><span class="stop-desc">Small-town diner charm</span></li>
+        <li><span class="stop-name">Mr. D'z Route 66 Diner</span><span class="stop-mile">Kingman</span><a class="map-link" href="" data-addr="105 E Andy Devine Ave, Kingman, AZ 86401"><i class="pin">📍</i>105 E Andy Devine Ave, Kingman, AZ</a><span class="stop-desc">Turquoise building, root beer floats, burgers</span></li>
+        <li><span class="stop-name">MartAnne's Burrito Palace</span><span class="stop-mile">Flagstaff</span><a class="map-link" href="" data-addr="112 E Route 66, Flagstaff, AZ 86001"><i class="pin">📍</i>112 E Route 66, Flagstaff, AZ</a><span class="stop-desc">Beloved local spot, or Brix at 413 N San Francisco St</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section sights">
+      <h3><span class="si">⭐</span> Worth Seeing</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Cathedral Gorge State Park</span><span class="stop-mile">nr Caliente</span><a class="map-link" href="" data-addr="Cathedral Gorge State Park, Panaca, NV"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">Stunning eroded clay formations. Quick 30-min walk. Free.</span></li>
+        <li><span class="stop-name">Mike O'Callaghan&ndash;Pat Tillman Bridge</span><a class="map-link" href="" data-addr="Mike O'Callaghan-Pat Tillman Memorial Bridge, NV"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">Crosses Hoover Dam gorge &mdash; incredible views</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section resupply">
+      <h3><span class="si">🛒</span> Resupply</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">Kingman</span><a class="map-link" href="" data-addr="3396 Stockton Hill Rd, Kingman, AZ 86409"><i class="pin">📍</i>3396 Stockton Hill Rd, Kingman, AZ</a><span class="stop-desc">Midday restock for ice, drinks, snacks</span></li>
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">Flagstaff</span><a class="map-link" href="" data-addr="2601 E Huntington Dr, Flagstaff, AZ 86004"><i class="pin">📍</i>2601 E Huntington Dr, Flagstaff, AZ</a><span class="stop-desc">Full restock &mdash; near Black Bart's RV Park</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section notes">
+      <h3><span class="si">⚠️</span> Road Notes</h3>
+      <ul class="stop-list">
+        <li>Shorter day after yesterday's push &mdash; enjoy the scenery</li>
+        <li>Flagstaff at 7,000 ft: <strong>April nights 20s&ndash;30s°F</strong>. Run the heater.</li>
+        <li>Swap drivers at Kingman (~halfway)</li>
+      </ul>
+    </div>
+
+    <div class="overnight">
+      <h3><span class="si">🌙</span> Overnight in Flagstaff</h3>
+      <div class="overnight-options">
+        <div class="overnight-opt"><div class="opt-name">Black Bart's RV Park</div><div class="opt-price">~$40&ndash;55/night</div><div class="opt-desc">Steakhouse next door &mdash; dinner and a show</div><a class="map-link" href="" data-addr="2760 E Butler Ave, Flagstaff, AZ 86004"><i class="pin">📍</i>2760 E Butler Ave, Flagstaff, AZ</a><span class="opt-tag rv">RV Park</span></div>
+        <div class="overnight-opt"><div class="opt-name">Woody Mountain</div><div class="opt-price">~$35&ndash;50/night</div><div class="opt-desc">Rustic, in the pines southwest of town</div><a class="map-link" href="" data-addr="2727 W Route 66, Flagstaff, AZ 86001"><i class="pin">📍</i>2727 W Route 66, Flagstaff, AZ</a><span class="opt-tag rv">RV Park</span></div>
+        <div class="overnight-opt"><div class="opt-name">Flagstaff KOA Holiday</div><div class="opt-price">~$75&ndash;100/night</div><div class="opt-desc">Full hookups, big rig friendly, cabins</div><a class="map-link" href="" data-addr="5803 N US Hwy 89, Flagstaff, AZ 86004"><i class="pin">📍</i>5803 N US Hwy 89, Flagstaff, AZ</a><span class="opt-tag rv">RV Park</span></div>
+        <div class="overnight-opt"><div class="opt-name">Hotel Monte Vista</div><div class="opt-price">~$100&ndash;140/night</div><div class="opt-desc">Historic downtown, supposedly haunted</div><a class="map-link" href="" data-addr="100 N San Francisco St, Flagstaff, AZ 86001"><i class="pin">📍</i>100 N San Francisco St, Flagstaff, AZ</a><span class="opt-tag hotel">Hotel</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DAY 3 ========== -->
+<div class="day-card day-3" id="day3">
+  <div class="day-header">
+    <div class="day-number">Day 3 &mdash; Sunday, April 19</div>
+    <h2 class="day-title">Flagstaff, AZ &rarr; Las Cruces, NM</h2>
+    <div class="day-meta">
+      <div class="day-meta-item"><span>&#9672;</span> ~465 mi</div>
+      <div class="day-meta-item"><span>&#9719;</span> ~7 hrs</div>
+      <div class="day-meta-item"><span>&#9650;</span> I-40 across AZ/NM, I-25 south</div>
+    </div>
+  </div>
+  <div class="day-route">I-40 E across AZ/NM &rarr; I-25 S from Albuquerque &rarr; Las Cruces</div>
+  <div class="day-body">
+    <div class="weather-strip">
+      <div class="weather-cell"><div class="wx-location">Flagstaff</div><div class="wx-icon">⛅</div><div class="wx-temps">59°F <span class="wx-lo">/ 36°F</span></div><div class="wx-desc">Partly cloudy</div><div class="wx-rain">4%</div></div>
+      <div class="weather-cell"><div class="wx-location">Albuquerque</div><div class="wx-icon">⛅</div><div class="wx-temps">73°F <span class="wx-lo">/ 55°F</span></div><div class="wx-desc">Overcast</div><div class="wx-rain">10%</div></div>
+      <div class="weather-cell"><div class="wx-location">Las Cruces</div><div class="wx-icon">⛅</div><div class="wx-temps">78°F <span class="wx-lo">/ 59°F</span></div><div class="wx-desc">Overcast</div><div class="wx-rain">8%</div></div>
+    </div>
+    <div class="weather-note">Open-Meteo forecast &bull; Apr 9</div>
+
+    <div class="stop-section fuel">
+      <h3><span class="si">⛽</span> Fuel Stops</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Winslow, AZ</span><span class="stop-mile">mi 60</span></li>
+        <li><span class="stop-name">Holbrook, AZ</span><span class="stop-mile">mi 90</span><span class="stop-desc">Near Petrified Forest entrance</span></li>
+        <li><span class="stop-name">Gallup, NM</span><span class="stop-mile">mi 190</span><span class="warning-tag">Must fill</span><span class="stop-desc">Major truck stop town</span></li>
+        <li><span class="stop-name">Albuquerque, NM</span><span class="stop-mile">mi 320</span><span class="warning-tag">Must fill</span><span class="stop-desc">Fill up before I-25 south</span></li>
+        <li><span class="stop-name">Truth or Consequences</span><span class="stop-mile">mi 420</span></li>
+        <li><span class="stop-name">Las Cruces, NM</span><span class="stop-mile">mi 465</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section food">
+      <h3><span class="si">🍽</span> Where to Eat</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Turquoise Room at La Posada</span><span class="stop-mile">Winslow</span><a class="map-link" href="" data-addr="303 E 2nd St, Winslow, AZ 86047"><i class="pin">📍</i>303 E 2nd St, Winslow, AZ</a><span class="stop-desc">Southwestern fine dining in a stunning 1929 Harvey House</span></li>
+        <li><span class="stop-name">Jerry's Cafe</span><span class="stop-mile">Gallup</span><a class="map-link" href="" data-addr="406 W Coal Ave, Gallup, NM 87301"><i class="pin">📍</i>406 W Coal Ave, Gallup, NM</a><span class="stop-desc">Smothered burritos with green chile</span></li>
+        <li><span class="stop-name">Frontier Restaurant</span><span class="stop-mile">Albuquerque</span><a class="map-link" href="" data-addr="2400 Central Ave SE, Albuquerque, NM 87106"><i class="pin">📍</i>2400 Central Ave SE, Albuquerque, NM</a><span class="stop-desc">Since 1971. Famous burritos &amp; green chile stew.</span></li>
+        <li><span class="stop-name">Sparky's Burgers</span><span class="stop-mile">Hatch</span><a class="map-link" href="" data-addr="115 Franklin St, Hatch, NM 87937"><i class="pin">📍</i>115 Franklin St, Hatch, NM</a><span class="stop-desc">Legendary green chile cheeseburger</span></li>
+        <li><span class="stop-name">La Posta de Mesilla</span><span class="stop-mile">Las Cruces</span><a class="map-link" href="" data-addr="2410 Calle de San Albino, Mesilla, NM 88046"><i class="pin">📍</i>2410 Calle de San Albino, Mesilla, NM</a><span class="stop-desc">Historic adobe restaurant, Mexican food since the 1930s</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section sights">
+      <h3><span class="si">⭐</span> Worth Seeing</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Standin' on the Corner</span><span class="stop-mile">Winslow</span><a class="map-link" href="" data-addr="Standin on the Corner Park, Winslow, AZ"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">Quick photo stop &mdash; the Eagles song</span></li>
+        <li><span class="stop-name">Petrified Forest / Painted Desert</span><span class="stop-mile">nr Holbrook</span><a class="map-link" href="" data-addr="Petrified Forest National Park, AZ"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">Drive through in ~1 hour off I-40. Stunning.</span></li>
+        <li><span class="stop-name">Albuquerque Old Town</span><a class="map-link" href="" data-addr="Old Town, Albuquerque, NM"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">30-min stop right off I-40. Beautiful plaza, adobe.</span></li>
+        <li><span class="stop-name">Riverbend Hot Springs</span><span class="stop-mile">T or C</span><a class="map-link" href="" data-addr="Riverbend Hot Springs, Truth or Consequences, NM"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">Drop-in soaks along the Rio Grande, ~$15</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section resupply">
+      <h3><span class="si">🛒</span> Resupply</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">Gallup</span><a class="map-link" href="" data-addr="1650 W Maloney Ave, Gallup, NM 87301"><i class="pin">📍</i>1650 W Maloney Ave, Gallup, NM</a><span class="stop-desc">Quick restock near I-40</span></li>
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">Albuquerque</span><a class="map-link" href="" data-addr="2550 Coors Blvd NW, Albuquerque, NM 87120"><i class="pin">📍</i>2550 Coors Blvd NW, Albuquerque, NM</a><span class="stop-desc">Right at I-40 / Coors Blvd interchange</span></li>
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">Las Cruces</span><a class="map-link" href="" data-addr="571 Walton Blvd, Las Cruces, NM 88001"><i class="pin">📍</i>571 Walton Blvd, Las Cruces, NM</a><span class="stop-desc">Full restock for last day &mdash; ice &amp; water for West Texas</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section notes">
+      <h3><span class="si">⚠️</span> Road Notes</h3>
+      <ul class="stop-list">
+        <li><strong>Strong crosswinds near Gallup</strong> common in April. G20 is boxy &mdash; grip the wheel.</li>
+        <li>Daytime highs 65&ndash;80°F, very pleasant driving</li>
+        <li>Swap drivers at Albuquerque (~halfway)</li>
+      </ul>
+    </div>
+
+    <div class="overnight">
+      <h3><span class="si">🌙</span> Overnight in Las Cruces</h3>
+      <div class="overnight-options">
+        <div class="overnight-opt"><div class="opt-name">Hacienda RV Resort</div><div class="opt-price">~$40&ndash;55/night</div><div class="opt-desc">Highly rated, full hookups, pool</div><a class="map-link" href="" data-addr="740 Stern Dr, Las Cruces, NM 88005"><i class="pin">📍</i>740 Stern Dr, Las Cruces, NM</a><span class="opt-tag rv">RV Park</span></div>
+        <div class="overnight-opt"><div class="opt-name">Sunny Acres RV Park</div><div class="opt-price">~$30&ndash;40/night</div><div class="opt-desc">Clean, affordable, good Class B reviews</div><a class="map-link" href="" data-addr="595 N Valley Dr, Las Cruces, NM 88005"><i class="pin">📍</i>595 N Valley Dr, Las Cruces, NM</a><span class="opt-tag rv">RV Park</span></div>
+        <div class="overnight-opt"><div class="opt-name">Hotel Encanto</div><div class="opt-price">~$100&ndash;130/night</div><div class="opt-desc">Nice hotel with NM character</div><a class="map-link" href="" data-addr="705 S Telshor Blvd, Las Cruces, NM 88011"><i class="pin">📍</i>705 S Telshor Blvd, Las Cruces, NM</a><span class="opt-tag hotel">Hotel</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== DAY 4 ========== -->
+<div class="day-card day-4" id="day4">
+  <div class="day-header">
+    <div class="day-number">Day 4 &mdash; Monday, April 20</div>
+    <h2 class="day-title">Las Cruces, NM &rarr; Austin, TX</h2>
+    <div class="day-meta">
+      <div class="day-meta-item"><span>&#9672;</span> ~450 mi</div>
+      <div class="day-meta-item"><span>&#9719;</span> ~7 hrs</div>
+      <div class="day-meta-item"><span>&#9650;</span> Hill Country finish</div>
+    </div>
+  </div>
+  <div class="day-route">I-10 E (El Paso) &rarr; across West Texas &rarr; Junction, TX &rarr; US-290 E through Hill Country &rarr; Austin</div>
+  <div class="day-body">
+    <div class="weather-strip">
+      <div class="weather-cell"><div class="wx-location">Las Cruces</div><div class="wx-icon">⛅</div><div class="wx-temps">81°F <span class="wx-lo">/ 61°F</span></div><div class="wx-desc">Overcast</div><div class="wx-rain">5%</div></div>
+      <div class="weather-cell"><div class="wx-location">El Paso</div><div class="wx-icon">🌤</div><div class="wx-temps">85°F <span class="wx-lo">/ 66°F</span></div><div class="wx-desc">Overcast, dry</div><div class="wx-rain">4%</div></div>
+      <div class="weather-cell"><div class="wx-location">Austin</div><div class="wx-icon">☀️</div><div class="wx-temps">97°F <span class="wx-lo">/ 72°F</span></div><div class="wx-desc">Hot</div><div class="wx-rain">8%</div></div>
+    </div>
+    <div class="weather-note">Open-Meteo forecast &bull; Apr 9</div>
+
+    <div class="stop-section fuel">
+      <h3><span class="si">⛽</span> Fuel Stops</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">El Paso, TX</span><span class="stop-mile">mi 45</span><span class="warning-tag">Must fill</span><span class="stop-desc">Last major metro before deep West Texas</span></li>
+        <li><span class="stop-name">Van Horn, TX</span><span class="stop-mile">mi 165</span><span class="warning-tag">Must fill</span><span class="stop-desc">Don't skip. West Texas distances are no joke.</span></li>
+        <li><span class="stop-name">Fort Stockton, TX</span><span class="stop-mile">mi 285</span><span class="stop-desc">Fill up again</span></li>
+        <li><span class="stop-name">Junction, TX</span><span class="stop-mile">mi 420</span><span class="stop-desc">Top off for the final leg</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section food">
+      <h3><span class="si">🍽</span> Where to Eat</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">L&amp;J Cafe "The Old Place"</span><span class="stop-mile">El Paso</span><a class="map-link" href="" data-addr="3622 E Missouri Ave, El Paso, TX 79903"><i class="pin">📍</i>3622 E Missouri Ave, El Paso, TX</a><span class="stop-desc">Since 1927, legendary red enchiladas &amp; huevos rancheros</span></li>
+        <li><span class="stop-name">Chuy's Restaurant</span><span class="stop-mile">Van Horn</span><a class="map-link" href="" data-addr="1200 W Broadway St, Van Horn, TX 79855"><i class="pin">📍</i>1200 W Broadway St, Van Horn, TX</a><span class="stop-desc">The original, not the chain &mdash; West Texas institution</span></li>
+        <li><span class="stop-name">Lum's BBQ</span><span class="stop-mile">Junction</span><a class="map-link" href="" data-addr="2031 Main St, Junction, TX 76849"><i class="pin">📍</i>2031 Main St, Junction, TX</a><span class="stop-desc">Solid small-town Texas barbecue</span></li>
+        <li><span class="stop-name">Pecan Street Brewing</span><span class="stop-mile">Johnson City</span><a class="map-link" href="" data-addr="106 E Pecan Dr, Johnson City, TX 78636"><i class="pin">📍</i>106 E Pecan Dr, Johnson City, TX</a><span class="stop-desc">Hill Country vibes on the home stretch</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section sights">
+      <h3><span class="si">⭐</span> Worth Seeing</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">El Paso Scenic Drive</span><a class="map-link" href="" data-addr="El Paso Scenic Drive Overlook, El Paso, TX"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">Views of three states and two countries</span></li>
+        <li><span class="stop-name">Balmorhea State Park</span><span class="stop-mile">nr Fort Stockton</span><a class="map-link" href="" data-addr="Balmorhea State Park, Toyahvale, TX"><i class="pin">📍</i>Open in Maps</a><span class="stop-desc">Natural spring-fed pool, crystal-clear 72°F. Slight detour off I-10.</span></li>
+        <li><span class="stop-name">US-290 Bluebonnets</span><span class="stop-mile">Hill Country</span><span class="stop-desc">April is peak season &mdash; wildflowers along the roadsides</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section resupply">
+      <h3><span class="si">🛒</span> Resupply</h3>
+      <ul class="stop-list">
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">El Paso</span><a class="map-link" href="" data-addr="7101 Gateway Blvd W, El Paso, TX 79925"><i class="pin">📍</i>7101 Gateway Blvd W, El Paso, TX</a><span class="stop-desc">Along I-10 &mdash; last major store before West Texas</span></li>
+        <li><span class="stop-name">Walmart Supercenter</span><span class="stop-mile">Fort Stockton</span><a class="map-link" href="" data-addr="2610 W Dickinson Blvd, Fort Stockton, TX 79735"><i class="pin">📍</i>2610 W Dickinson Blvd, Fort Stockton, TX</a><span class="stop-desc">On US-290. Ice and water for the final stretch.</span></li>
+      </ul>
+    </div>
+
+    <div class="stop-section notes">
+      <h3><span class="si">⚠️</span> Road Notes</h3>
+      <ul class="stop-list">
+        <li>West Texas I-10 limits are 80 mph but G20 is happier at 60&ndash;65.</li>
+        <li><strong>Patchy cell service</strong> between El Paso and Fort Stockton</li>
+        <li>US-290 from Junction is scenic two-lane &mdash; slower but beautiful</li>
+        <li>Swap at Fort Stockton or Sonora (~halfway)</li>
+        <li>Last day &mdash; enjoy the Hill Country home stretch</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ========== BUDGET ========== -->
+<div class="budget-bar" id="budget">
+  <h2>Estimated Trip Budget</h2>
+  <div class="budget-items">
+    <div class="budget-item"><div class="amount">$535</div><div class="cat">Fuel (~153 gal)</div></div>
+    <div class="budget-item"><div class="amount">$150&ndash;350</div><div class="cat">Lodging (3 nights)</div></div>
+    <div class="budget-item"><div class="amount">$150&ndash;250</div><div class="cat">Food (4 days)</div></div>
+    <div class="budget-item"><div class="amount">$100&ndash;200</div><div class="cat">Supplies (Bend)</div></div>
+    <div class="budget-item total"><div class="amount">$935&ndash;1,335</div><div class="cat">Total (excl. van purchase)</div></div>
+  </div>
+</div>
+
+<!-- ========== PACKING ========== -->
+<div class="budget-bar" id="packing">
+  <h2>Carry-On Packing List</h2>
+  <p style="font-size: 0.8rem; color: rgba(255,248,240,0.45); margin-bottom: 0.5rem;">No checked bag &mdash; 6 days: Wed night through Monday arrival</p>
+  <div class="packing-grid">
+    <div class="packing-cat"><h4>Clothes</h4><ul>
+      <li>4 t-shirts / tops</li><li>2 pairs pants or shorts</li><li>1 light jacket or hoodie</li><li>5 pairs underwear + socks</li><li>Comfortable driving shoes (wear on plane)</li><li>Flip flops / sandals</li><li>Pajamas</li><li>Sunglasses + hat</li>
+    </ul></div>
+    <div class="packing-cat"><h4>Toiletries (TSA 3-1-1)</h4><ul>
+      <li>Travel-size toothpaste, deodorant, shampoo</li><li>Toothbrush</li><li>Sunscreen (travel size)</li><li>Lip balm with SPF</li><li>Medications (original bottles)</li>
+    </ul></div>
+    <div class="packing-cat"><h4>Electronics</h4><ul>
+      <li>Phone + charger + wall adapter</li><li>Portable battery pack (carry-on only)</li><li>Headphones / earbuds</li><li>Camera if desired</li>
+    </ul></div>
+    <div class="packing-cat"><h4>Documents</h4><ul>
+      <li>ID / driver's license</li><li>Insurance docs</li><li>Title / purchase paperwork</li><li>Credit/debit cards + ~$200 cash</li><li>AAA card if you have one</li>
+    </ul></div>
+  </div>
+</div>
+
+</div>
+
+<footer class="trip-footer">
+  Bend, OR &rarr; Ely, NV &rarr; Flagstaff, AZ &rarr; Las Cruces, NM &rarr; Austin, TX<br>
+  April 15&ndash;20, 2026 &bull; 1,835 miles &bull; 1993 Chevy G20 Horizon
+</footer>
+
+<!-- ========== INSTALL BANNER ========== -->
+<div class="install-banner" id="installBanner">
+  <p>Add this trip guide to your home screen for offline access</p>
+  <button class="install-btn" id="installBtn">Install App</button>
+  <button class="install-dismiss" id="installDismiss">Not now</button>
+</div>
+
+<script>
+// ---- MAP LINKS ----
+// Detect platform and generate appropriate map URL
+function getMapUrl(address) {
+  const encoded = encodeURIComponent(address);
+  // iOS Safari or standalone PWA on iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (isIOS) {
+    return 'maps://maps.apple.com/?q=' + encoded;
+  }
+  // Android or everything else → Google Maps
+  return 'https://www.google.com/maps/search/?api=1&query=' + encoded;
+}
+
+// Set all map link hrefs on load
+document.querySelectorAll('a.map-link[data-addr]').forEach(function(link) {
+  link.href = getMapUrl(link.dataset.addr);
+  link.target = '_blank';
+  link.rel = 'noopener';
+});
+
+// ---- CHECKLIST PERSISTENCE ----
+const STORAGE_KEY = 'roadtrip-checklist';
+function loadChecked() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+}
+function saveChecked(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+const checkState = loadChecked();
+document.querySelectorAll('.checklist-group li').forEach(function(li, idx) {
+  const key = 'c' + idx;
+  if (checkState[key]) li.classList.add('checked');
+  li.addEventListener('click', function() {
+    li.classList.toggle('checked');
+    checkState[key] = li.classList.contains('checked');
+    saveChecked(checkState);
+  });
+});
+
+// ---- NAV ACTIVE STATE ----
+const navLinks = document.querySelectorAll('.day-nav a');
+const sections = [];
+navLinks.forEach(function(a) {
+  const target = document.querySelector(a.getAttribute('href'));
+  if (target) sections.push({ el: target, link: a });
+});
+
+let ticking = false;
+window.addEventListener('scroll', function() {
+  if (!ticking) {
+    requestAnimationFrame(function() {
+      const scrollY = window.scrollY + 60;
+      let current = sections[0];
+      for (let i = sections.length - 1; i >= 0; i--) {
+        if (scrollY >= sections[i].el.offsetTop) { current = sections[i]; break; }
+      }
+      navLinks.forEach(function(l) { l.classList.remove('active'); });
+      if (current) current.link.classList.add('active');
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+// ---- PWA INSTALL ----
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').style.display = 'block';
+});
+
+document.getElementById('installBtn').addEventListener('click', function() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function() { deferredPrompt = null; });
+  }
+  document.getElementById('installBanner').style.display = 'none';
+});
+
+document.getElementById('installDismiss').addEventListener('click', function() {
+  document.getElementById('installBanner').style.display = 'none';
+});
+
+// ---- SERVICE WORKER ----
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(err) {
+    console.log('SW registration failed:', err);
+  });
+}
+</script>
+</body>
+</html>
