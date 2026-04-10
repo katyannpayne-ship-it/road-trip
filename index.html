@@ -308,6 +308,45 @@ a{color:inherit;text-decoration:none}
 .trip-stat .ts-num{font-size:1.2rem;font-weight:700;color:var(--gold)}
 .trip-stat .ts-label{font-family:'Space Mono',monospace;font-size:0.55rem;text-transform:uppercase;color:var(--dim)}
 
+/* ===== MAPS VIEW ===== */
+.map-section{padding:1.25rem 1.5rem;border-bottom:1px solid var(--faint)}
+.map-section:last-child{border-bottom:none}
+.map-section h3{font-size:0.85rem;margin-bottom:0.75rem;color:var(--gold)}
+.map-section p{font-size:0.78rem;color:var(--dim);line-height:1.5;margin-bottom:0.75rem}
+
+.dl-card{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.75rem 1rem;margin-bottom:0.5rem;
+  background:var(--card);border-radius:10px;border:1px solid var(--faint);
+  text-decoration:none;color:var(--cream);
+  transition:transform 0.1s;
+}
+.dl-card:active{transform:scale(0.98)}
+.dl-card .dl-icon{font-size:1.3rem;flex-shrink:0}
+.dl-card .dl-body{flex:1;min-width:0}
+.dl-card .dl-title{font-weight:600;font-size:0.82rem}
+.dl-card .dl-sub{font-size:0.68rem;color:var(--dim);margin-top:0.1rem}
+.dl-card .dl-arrow{color:var(--sky);font-size:1rem;flex-shrink:0}
+
+.strip-map{
+  background:var(--card);border-radius:12px;border:1px solid var(--faint);
+  padding:1rem;margin-bottom:1rem;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.strip-map svg{display:block;margin:0 auto}
+.strip-map-label{
+  font-family:'Space Mono',monospace;font-size:0.6rem;
+  color:var(--dim);text-align:center;margin-top:0.5rem;
+}
+.map-tip{
+  display:flex;align-items:flex-start;gap:0.5rem;
+  padding:0.75rem 1rem;background:rgba(91,155,213,0.08);
+  border-radius:8px;border-left:3px solid var(--sky);
+  font-size:0.78rem;color:var(--sand);line-height:1.5;
+  margin-bottom:1rem;
+}
+.map-tip .tip-icon{font-size:1rem;flex-shrink:0;margin-top:0.1rem}
+
 /* ===== ANIMATED VAN ===== */
 .van-scene{
   position:relative;width:100%;height:120px;
@@ -585,6 +624,15 @@ a{color:inherit;text-decoration:none}
   <div id="prepContent"></div>
 </div>
 
+<!-- ===== MAPS VIEW ===== -->
+<div class="view" id="viewMaps">
+  <div class="tl-header">
+    <h2>Offline Maps</h2>
+    <p>Download before you leave — critical for no-service stretches</p>
+  </div>
+  <div id="mapsContent"></div>
+</div>
+
 <!-- ===== INFO VIEW ===== -->
 <div class="view" id="viewInfo">
   <div class="tl-header">
@@ -596,8 +644,9 @@ a{color:inherit;text-decoration:none}
 
 <!-- ===== BOTTOM NAV ===== -->
 <nav class="bottom-nav">
-  <button class="active" data-view="viewDash"><span class="nav-icon">&#9673;</span>Dashboard</button>
+  <button class="active" data-view="viewDash"><span class="nav-icon">&#9673;</span>Home</button>
   <button data-view="viewTimeline"><span class="nav-icon">&#9474;</span>Timeline</button>
+  <button data-view="viewMaps"><span class="nav-icon">&#9872;</span>Maps</button>
   <button data-view="viewPrep"><span class="nav-icon">&#9745;</span>Prep</button>
   <button data-view="viewInfo"><span class="nav-icon">&#9881;</span>Info</button>
 </nav>
@@ -927,6 +976,168 @@ function renderPrep(){
 }
 
 // ============================================================
+// MAPS
+// ============================================================
+function renderMaps(){
+  const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+
+  // Google Maps offline area links (centered on key regions)
+  const regions=[
+    {name:"Central Oregon",sub:"Bend → Burns",coords:"43.5,-120.5,8",critical:false},
+    {name:"Northern Nevada",sub:"Burns → Winnemucca → Ely",coords:"40.8,-117.0,7",critical:true,warn:"No cell service ~200 mi"},
+    {name:"Southern Nevada",sub:"Ely → Caliente → Vegas bypass",coords:"37.5,-115.0,8",critical:false},
+    {name:"Northern Arizona",sub:"Kingman → Flagstaff",coords:"35.5,-112.5,8",critical:false},
+    {name:"AZ / NM Border",sub:"Flagstaff → Winslow → Gallup",coords:"35.2,-109.5,8",critical:false},
+    {name:"Central New Mexico",sub:"Albuquerque → T or C → Las Cruces",coords:"33.5,-106.5,8",critical:false},
+    {name:"West Texas",sub:"El Paso → Van Horn → Fort Stockton",coords:"31.0,-104.5,7",critical:true,warn:"Patchy cell service ~250 mi"},
+    {name:"Texas Hill Country",sub:"Junction → Johnson City → Austin",coords:"30.5,-98.5,8",critical:false}
+  ];
+
+  function gMapsLink(coords){
+    return `https://www.google.com/maps/@${coords}z`;
+  }
+  function aMapsLink(coords){
+    const[lat,lng]=coords.split(',');
+    return `maps://maps.apple.com/?ll=${lat},${lng}&z=8`;
+  }
+
+  let html=`
+    <div class="map-section">
+      <h3>How to Download</h3>
+      <div class="map-tip">
+        <span class="tip-icon">📱</span>
+        <div>
+          <strong>Google Maps:</strong> Open region link below → tap your profile pic → Offline maps → Select your own map → Download<br><br>
+          <strong>Apple Maps (iOS 17+):</strong> Open Maps → tap your profile pic → Offline Maps → Download New Map → search the area
+        </div>
+      </div>
+      <div class="map-tip">
+        <span class="tip-icon">⚠️</span>
+        <div><strong>Do this on Wi-Fi before you leave Bend.</strong> Each download is 50–150 MB. You need all 8 regions to cover the full route.</div>
+      </div>
+    </div>
+
+    <div class="map-section">
+      <h3>Download Regions</h3>
+      <p>Tap to open each area in Google Maps, then download for offline use.</p>`;
+
+  regions.forEach(r=>{
+    const href=iOS?aMapsLink(r.coords):gMapsLink(r.coords);
+    const warn=r.critical?`<span style="color:var(--clay);font-family:'Space Mono',monospace;font-size:0.6rem;display:block;margin-top:0.15rem">⚠ ${r.warn}</span>`:'';
+    const border=r.critical?'border-left:3px solid var(--clay);':'';
+    html+=`<a class="dl-card" href="${href}" target="_blank" rel="noopener" style="${border}">
+      <span class="dl-icon">${r.critical?'🔴':'🗺'}</span>
+      <div class="dl-body"><div class="dl-title">${r.name}</div><div class="dl-sub">${r.sub}</div>${warn}</div>
+      <span class="dl-arrow">↗</span>
+    </a>`;
+  });
+  html+=`</div>`;
+
+  // STRIP MAPS - offline visual reference
+  html+=`
+    <div class="map-section">
+      <h3>Offline Route Maps</h3>
+      <p>These strip maps work with zero signal — distances between key stops.</p>
+    </div>`;
+
+  // Day 1 strip map
+  html+=stripMap("Day 1: Bend → Ely",[
+    {name:"Bend",mi:0},
+    {name:"Burns",mi:130,icon:"⛽",warn:true},
+    {name:"Orovada",mi:340,icon:"⛽"},
+    {name:"Winnemucca",mi:420,icon:"⛽🍽🛒"},
+    {name:"Ely",mi:500,icon:"⛽🌙"}
+  ],"⚠ No cell service Burns → Winnemucca (~200 mi)");
+
+  // Day 2 strip map
+  html+=stripMap("Day 2: Ely → Flagstaff",[
+    {name:"Ely",mi:0},
+    {name:"Caliente",mi:100,icon:"⛽🍽"},
+    {name:"Alamo",mi:170,icon:"⛽"},
+    {name:"Vegas bypass",mi:270,icon:"⛽"},
+    {name:"Kingman",mi:320,icon:"⛽🍽🛒"},
+    {name:"Flagstaff",mi:420,icon:"⛽🍽🌙"}
+  ]);
+
+  // Day 3 strip map
+  html+=stripMap("Day 3: Flagstaff → Las Cruces",[
+    {name:"Flagstaff",mi:0},
+    {name:"Winslow",mi:60,icon:"⛽🍽⭐"},
+    {name:"Holbrook",mi:90,icon:"⛽"},
+    {name:"Gallup",mi:190,icon:"⛽🍽🛒",warn:true},
+    {name:"ABQ",mi:320,icon:"⛽🍽🛒",warn:true},
+    {name:"T or C",mi:420,icon:"⛽"},
+    {name:"Las Cruces",mi:465,icon:"⛽🍽🌙"}
+  ],"⚠ Strong crosswinds near Gallup");
+
+  // Day 4 strip map
+  html+=stripMap("Day 4: Las Cruces → Austin",[
+    {name:"Las Cruces",mi:0},
+    {name:"El Paso",mi:45,icon:"⛽🍽🛒",warn:true},
+    {name:"Van Horn",mi:165,icon:"⛽🍽",warn:true},
+    {name:"Ft Stockton",mi:285,icon:"⛽🛒"},
+    {name:"Junction",mi:420,icon:"⛽🍽"},
+    {name:"Austin",mi:450,icon:"🏠"}
+  ],"⚠ Patchy cell El Paso → Fort Stockton (~240 mi)");
+
+  document.getElementById('mapsContent').innerHTML=html;
+}
+
+function stripMap(title,stops,warning){
+  const totalMi=stops[stops.length-1].mi;
+  const w=Math.max(stops.length*100,340);
+  const pad=40;
+  const lineW=w-pad*2;
+  const h=130;
+  const lineY=50;
+
+  let svg=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="min-width:${w}px">`;
+
+  // Route line
+  svg+=`<line x1="${pad}" y1="${lineY}" x2="${w-pad}" y2="${lineY}" stroke="rgba(255,255,255,0.12)" stroke-width="3" stroke-linecap="round"/>`;
+
+  // Dashed center line
+  svg+=`<line x1="${pad}" y1="${lineY}" x2="${w-pad}" y2="${lineY}" stroke="rgba(212,168,67,0.3)" stroke-width="1" stroke-dasharray="6,4"/>`;
+
+  stops.forEach((s,i)=>{
+    const x=pad+(s.mi/totalMi)*lineW;
+    const dotR=i===0||i===stops.length-1?6:4;
+    const color=s.warn?'#C4734F':i===0?'#7A8B6F':i===stops.length-1?'#D4A843':'rgba(255,248,240,0.5)';
+
+    // Dot
+    svg+=`<circle cx="${x}" cy="${lineY}" r="${dotR}" fill="${color}"/>`;
+
+    // Distance label between stops
+    if(i>0){
+      const prevX=pad+(stops[i-1].mi/totalMi)*lineW;
+      const midX=(prevX+x)/2;
+      const dist=s.mi-stops[i-1].mi;
+      svg+=`<text x="${midX}" y="${lineY-10}" text-anchor="middle" font-family="'Space Mono',monospace" font-size="9" fill="rgba(212,168,67,0.6)">${dist}mi</text>`;
+    }
+
+    // City name (alternate above/below to avoid overlap)
+    const textY=i%2===0?lineY+22:lineY+34;
+    svg+=`<text x="${x}" y="${textY}" text-anchor="middle" font-family="Outfit,sans-serif" font-size="10" font-weight="600" fill="rgba(255,248,240,0.75)">${s.name}</text>`;
+
+    // Icons below name
+    if(s.icon){
+      const iconY=i%2===0?lineY+35:lineY+47;
+      svg+=`<text x="${x}" y="${iconY}" text-anchor="middle" font-size="9">${s.icon}</text>`;
+    }
+  });
+
+  svg+=`</svg>`;
+
+  let warnHtml=warning?`<div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--clay);margin-top:0.5rem;text-align:center">${warning}</div>`:'';
+
+  return `<div class="strip-map">
+    <div class="strip-map-label">${title}</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0.5rem 0">${svg}</div>
+    ${warnHtml}
+  </div>`;
+}
+
+// ============================================================
 // INFO
 // ============================================================
 function renderInfo(){
@@ -1005,6 +1216,7 @@ document.querySelectorAll('.bottom-nav button').forEach(btn=>{
 
 renderDash();
 renderTimeline();
+renderMaps();
 renderPrep();
 renderInfo();
 
