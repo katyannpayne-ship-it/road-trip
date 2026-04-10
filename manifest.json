@@ -2,7 +2,7 @@
   "name": "Bend to Austin Road Trip",
   "short_name": "Road Trip",
   "description": "Bend OR to Austin TX road trip guide — April 15-20, 2026",
-  "start_url": "/",
+  "start_url": "/road-trip/",
   "display": "standalone",
   "background_color": "#1E1E2E",
   "theme_color": "#1E1E2E",
