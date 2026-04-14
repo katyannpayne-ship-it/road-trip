@@ -168,6 +168,8 @@ a{color:inherit;text-decoration:none}
 .tl-day-2 .tl-day-dot{background:var(--clay)}
 .tl-day-3 .tl-day-dot{background:var(--sky)}
 .tl-day-4 .tl-day-dot{background:var(--gold)}
+.tl-day-5 .tl-day-dot{background:#5BA8A8}
+.tl-day-6 .tl-day-dot{background:#C4A43F}
 
 .tl-day-info{flex:1}
 .tl-day-name{font-weight:700;font-size:0.95rem}
@@ -205,6 +207,13 @@ a{color:inherit;text-decoration:none}
 .tl-stop-icon{font-size:0.85rem}
 .tl-stop-name{font-weight:600;font-size:0.88rem;flex:1}
 .tl-stop-mile{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--gold);opacity:0.7}
+.tl-stop-mapbtn{
+  font-size:1rem;flex-shrink:0;text-decoration:none;
+  padding:0.2rem;border-radius:6px;
+  transition:background 0.15s;
+}
+.tl-stop-mapbtn:active{background:rgba(91,155,213,0.15)}
+
 .tl-stop-chevron{
   font-size:0.8rem;color:var(--dim);
   transition:transform 0.2s;flex-shrink:0;
@@ -417,6 +426,34 @@ a{color:inherit;text-decoration:none}
   90%{opacity:0.25}
   100%{right:110%;opacity:0}
 }
+
+/* timed schedule (Day 3 Grand Canyon) */
+.tl-timed-schedule{
+  margin:0.5rem 0 0.75rem 1.5rem;
+  padding:0.75rem 1rem;
+  background:rgba(212,168,67,0.08);
+  border-left:3px solid var(--gold);
+  border-radius:0 10px 10px 0;
+}
+.tl-timed-schedule h4{
+  font-family:'Space Mono',monospace;font-size:0.65rem;
+  text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);
+  margin-bottom:0.5rem;
+}
+.tl-timed-item{
+  display:flex;gap:0.6rem;padding:0.25rem 0;
+  font-size:0.78rem;color:var(--sand);line-height:1.4;
+}
+.tl-timed-item .tl-time{
+  font-family:'Space Mono',monospace;font-size:0.65rem;
+  color:var(--sky);flex-shrink:0;min-width:60px;padding-top:0.1rem;
+}
+.tl-timed-item .tl-event{flex:1}
+.tl-timed-item.highlight{
+  background:rgba(212,168,67,0.1);border-radius:6px;
+  padding:0.4rem 0.5rem;margin:0.15rem -0.5rem;
+}
+.tl-timed-item.highlight .tl-event{font-weight:600;color:var(--gold)}
 
 /* timeline van marker */
 .tl-van-marker{
@@ -660,130 +697,158 @@ const DAYS = [
     id:0, pill:"Wed 4/15", label:"Wednesday, April 15", title:"Fly into Bend",
     sub:"Arrive & rest up", miles:null, hrs:null,
     route:null,
-    weather:[{city:"Bend",icon:"🌧",hi:"45°F",lo:"34°F",desc:"Drizzle possible",rain:"18%"}],
+    weather:[{city:"Bend",icon:"🌧",hi:"50°F",lo:"32°F",desc:"Spring showers",rain:"20%"}],
     stops:[]
   },
   {
     id:1, pill:"Thu 4/16", label:"Thursday, April 16", title:"Van Prep Day",
     sub:"Pick up van, systems check, shop", miles:null, hrs:null,
     route:null,
-    weather:[{city:"Bend",icon:"⛅",hi:"46°F",lo:"29°F",desc:"Overcast, clearing",rain:"7%"}],
+    weather:[{city:"Bend",icon:"⛅",hi:"52°F",lo:"30°F",desc:"Overcast, clearing",rain:"10%"}],
     stops:[]
   },
   {
-    id:2, pill:"Fri 4/17", label:"Day 1 — Friday, April 17", title:"Bend → Ely",
-    sub:"Longest day — both drivers fresh", miles:"~500 mi", hrs:"~8.5 hrs",
-    route:"US-97 S → US-20 E → OR-78 S → US-95 S → I-80 E → US-93 S → Ely",
+    id:2, pill:"Fri 4/17", label:"Day 1 — Friday, April 17", title:"Bend → Walker River SRA",
+    sub:"First day in the van — take it easy", miles:"~370 mi", hrs:"~6 hrs",
+    route:"US-97 S → US-20 E → US-395 S → Hwy 208 → Walker River SRA",
     weather:[
-      {city:"Bend",icon:"⛅",hi:"48°F",lo:"33°F",desc:"Partly cloudy",rain:"6%"},
-      {city:"Winnemucca",icon:"🌦",hi:"52°F",lo:"40°F",desc:"Drizzle possible",rain:"6%"},
-      {city:"Ely",icon:"🌨",hi:"44°F",lo:"36°F",desc:"Snow flurries",rain:"9%"}
+      {city:"Bend",icon:"⛅",hi:"52°F",lo:"30°F",desc:"Partly cloudy",rain:"8%"},
+      {city:"Lakeview",icon:"🌤",hi:"55°F",lo:"28°F",desc:"Clear skies",rain:"5%"},
+      {city:"Yerington",icon:"🌤",hi:"62°F",lo:"32°F",desc:"Sunny & dry",rain:"3%"}
     ],
     stops:[
-      {type:"fuel",name:"Burns, OR",mile:"mi 130",warn:true,desc:"Last reliable fuel before 200-mi remote stretch"},
-      {type:"fuel",name:"Orovada, NV",mile:"mi 340",desc:"Small community, don't skip"},
-      {type:"food",name:"Pine Room Restaurant",mile:"Burns",addr:"543 W Monroe St, Burns, OR 97720",desc:"Classic local spot, good lunch stop"},
-      {type:"fuel",name:"Winnemucca, NV",mile:"mi 420",desc:"Full services on I-80. Top off and stretch."},
-      {type:"food",name:"The Martin Hotel",mile:"Winnemucca",addr:"94 W Railroad St, Winnemucca, NV 89445",desc:"Basque restaurant since 1898 — family-style soup, beans, bread, salad, main course. Don't miss this."},
-      {type:"shop",name:"Walmart Supercenter",mile:"Winnemucca",addr:"3010 Potato Rd, Winnemucca, NV 89445",desc:"Restock ice, drinks, snacks"},
-      {type:"note",name:"No cell service ~200 mi",desc:"Burns to Winnemucca — download offline maps. Watch for open-range cattle on US-95."},
-      {type:"fuel",name:"Ely, NV",mile:"mi 500",desc:"Multiple stations, full services"},
-      {type:"food",name:"Economy Drug",mile:"Ely",addr:"707 Aultman St, Ely, NV 89301",desc:"Old-fashioned lunch counter"},
-      {type:"shop",name:"Ridley's Family Markets",mile:"Ely",addr:"1689 Great Basin Blvd, Ely, NV 89301",desc:"Full grocery for cooler restock"},
-      {type:"sleep",name:"KOA Ely Journey",mile:"~$50–60",addr:"1596 US-93, Ely, NV 89301",desc:"Full hookups, 30/50 amp, pull-throughs",tag:"rv"},
-      {type:"sleep",name:"Valley View RV Park",mile:"~$35",addr:"65 N McGill Hwy, Ely, NV 89301",desc:"20 full hookup sites, showers, laundry, propane",tag:"rv"},
-      {type:"sleep",name:"Hotel Nevada",mile:"~$50–80",addr:"501 Aultman St, Ely, NV 89301",desc:"Historic 1929 hotel, casino, rooftop views",tag:"hotel"},
-      {type:"sleep",name:"Jailhouse Motel",mile:"~$60–80",addr:"211 5th St, Ely, NV 89301",desc:"Budget-friendly, clean, Cellblock Steakhouse",tag:"hotel"}
+      {type:"fuel",name:"La Pine, OR",mile:"mi 30",desc:"Top off early before heading east"},
+      {type:"fuel",name:"Lakeview, OR",mile:"mi 180",warn:true,desc:"MUST FILL — long stretch ahead"},
+      {type:"food",name:"The Burger Queen",mile:"Lakeview",addr:"The Burger Queen, Lakeview, OR",desc:"Local burger joint, good road stop"},
+      {type:"fuel",name:"Susanville, CA",mile:"mi 280",desc:"Full services, stretch your legs"},
+      {type:"food",name:"Lassen Ale Works",mile:"Susanville",addr:"Lassen Ale Works, Susanville, CA",desc:"Craft beer & pub food"},
+      {type:"note",name:"Watch for deer on US-395",desc:"Especially dusk and dawn. Driver swap at Lakeview."},
+      {type:"fuel",name:"Yerington, NV",mile:"mi 360",desc:"Last fuel before camp"},
+      {type:"note",name:"Camp dinner",desc:"Cook on the fire ring tonight — first camp meal in the van!"},
+      {type:"sleep",name:"Walker River SRA — Quail Run",mile:"BOOKED",addr:"Walker River State Recreation Area Quail Run Campground, Yerington, NV",mapUrl:"https://maps.google.com/?q=Walker+River+State+Recreation+Area+Quail+Run+Campground,+Yerington,+NV",desc:"Electric + water hookups. Hwy 208 S, left on East Walker Rd, 4 mi to Pitchfork Ranch.",tag:"rv"}
     ]
   },
   {
-    id:3, pill:"Sat 4/18", label:"Day 2 — Saturday, April 18", title:"Ely → Flagstaff",
-    sub:"Shorter day — enjoy the scenery", miles:"~420 mi", hrs:"~6.5–7 hrs",
-    route:"US-93 S → I-15 S → I-11/US-93 S (Vegas bypass) → I-40 E → Flagstaff",
+    id:3, pill:"Sat 4/18", label:"Day 2 — Saturday, April 18", title:"Walker River → Boulder Beach",
+    sub:"Across Nevada to Lake Mead", miles:"~400 mi", hrs:"~6.5 hrs",
+    route:"Hwy 208 → US-95A S → US-95 S → Boulder Beach, Lake Mead",
     weather:[
-      {city:"Ely",icon:"⛅",hi:"47°F",lo:"35°F",desc:"Overcast",rain:"13%"},
-      {city:"Kingman",icon:"🌤",hi:"68°F",lo:"48°F",desc:"Overcast, dry",rain:"1%"},
-      {city:"Flagstaff",icon:"🌤",hi:"57°F",lo:"36°F",desc:"Mostly clear",rain:"3%"}
+      {city:"Yerington",icon:"🌤",hi:"64°F",lo:"34°F",desc:"Clear",rain:"2%"},
+      {city:"Tonopah",icon:"🌤",hi:"58°F",lo:"30°F",desc:"Dry & sunny",rain:"3%"},
+      {city:"Boulder City",icon:"☀️",hi:"82°F",lo:"58°F",desc:"Warm & clear",rain:"1%"}
     ],
     stops:[
-      {type:"fuel",name:"Caliente, NV",mile:"mi 100",desc:"Small town, top off here"},
-      {type:"food",name:"Knotty Pine Restaurant",mile:"Caliente",addr:"690 Front St, Caliente, NV 89008",desc:"Small-town diner charm"},
-      {type:"sight",name:"Cathedral Gorge State Park",mile:"nr Caliente",addr:"Cathedral Gorge State Park, Panaca, NV",desc:"Stunning eroded clay formations. Quick 30-min walk. Free."},
-      {type:"fuel",name:"Alamo / Ash Springs, NV",mile:"mi 170",desc:"Desert stops with fuel — don't pass by"},
-      {type:"sight",name:"Pat Tillman Memorial Bridge",addr:"Mike O'Callaghan-Pat Tillman Memorial Bridge, NV",desc:"Crosses Hoover Dam gorge — incredible views"},
-      {type:"fuel",name:"Las Vegas bypass",mile:"mi 270",desc:"Fuel near I-11 / US-93 junction"},
-      {type:"fuel",name:"Kingman, AZ",mile:"mi 320",desc:"Major stop, all services"},
+      {type:"fuel",name:"Yerington, NV",mile:"mi 10",desc:"Top off before heading south"},
+      {type:"fuel",name:"Hawthorne, NV",mile:"mi 80",desc:"Military town, full services"},
+      {type:"food",name:"El Capitan Lodge",mile:"Hawthorne",addr:"El Capitan Lodge, Hawthorne, NV",desc:"Solid road stop, diner fare"},
+      {type:"fuel",name:"Tonopah, NV",mile:"mi 200",warn:true,desc:"MUST FILL — Tonopah to Beatty: spotty cell, don't go below half tank"},
+      {type:"food",name:"Tonopah Brewing Company",mile:"Tonopah",addr:"Tonopah Brewing Company, Tonopah, NV",desc:"Try the Baja Burger. Or try the Jack Dempsey Room at the Mizpah Hotel."},
+      {type:"sight",name:"Mizpah Hotel (1907)",mile:"Tonopah",addr:"Mizpah Hotel, Tonopah, NV",desc:"Beautifully restored 1907 hotel — worth a walk-through even if not staying"},
+      {type:"note",name:"Wild horses on US-95",desc:"Common between Tonopah and Beatty. Driver swap at Tonopah."},
+      {type:"fuel",name:"Beatty, NV",mile:"mi 290",desc:"Near Death Valley junction, fuel up"},
+      {type:"fuel",name:"Boulder City, NV",mile:"mi 390",desc:"Last fuel before Lake Mead"},
+      {type:"food",name:"The Dillinger Food and Drinkery",mile:"Boulder City",addr:"The Dillinger Food and Drinkery, Boulder City, NV",desc:"Great food and drinks in historic downtown Boulder City"},
+      {type:"sleep",name:"Boulder Beach Campground",mile:"BOOKED — Site 103",addr:"Boulder Beach Campground, Lakeshore Rd, Boulder City, NV 89005",mapUrl:"https://maps.google.com/?q=Boulder+Beach+Campground,+Lakeshore+Rd,+Boulder+City,+NV+89005",desc:"No hookups. Lake Mead NRA — $25/vehicle park entry.",tag:"rv"}
+    ]
+  },
+  {
+    id:4, pill:"Sun 4/19", label:"Day 3 — Sunday, April 19", title:"Boulder Beach → Grand Canyon → Flagstaff",
+    sub:"Grand Canyon + Lowell Observatory", miles:"~330 mi", hrs:"~5.5 hrs + 4.5 hrs at canyon",
+    route:"US-93 S → I-40 E → AZ-64 N → Grand Canyon → AZ-64 S → US-180 S → Flagstaff",
+    timedSchedule:true,
+    weather:[
+      {city:"Boulder City",icon:"☀️",hi:"84°F",lo:"60°F",desc:"Hot & clear",rain:"0%"},
+      {city:"Grand Canyon",icon:"🌤",hi:"52°F",lo:"28°F",desc:"Cool, clear rim",rain:"5%"},
+      {city:"Flagstaff",icon:"🌙",hi:"50°F",lo:"22°F",desc:"Clear, cold night",rain:"3%"}
+    ],
+    schedule:[
+      {time:"7:30 AM",event:"Depart Boulder Beach"},
+      {time:"9:15 AM",event:"Fuel + breakfast at Kingman (Mr. D'z Route 66 Diner)"},
+      {time:"10:45 AM",event:"Williams — fuel up (last before rim)"},
+      {time:"12:00 PM",event:"Arrive Grand Canyon South Rim ($35/vehicle)",highlight:true},
+      {time:"12–4:30",event:"GRAND CANYON — Mather Point, Rim Trail, Yavapai Museum, lunch at Bright Angel Lodge/El Tovar, Lookout Studio, Kolb Studio",highlight:true},
+      {time:"4:30 PM",event:"Depart for Flagstaff"},
+      {time:"6:00 PM",event:"Arrive Flagstaff"},
+      {time:"6:15 PM",event:"Check in, quick dinner (MartAnne's Burrito Palace or Beaver Street Brewery)"},
+      {time:"8:30 PM",event:"LOWELL OBSERVATORY SHOW (tickets purchased!) — Clark Telescope, open-deck observatory. Dress warm: 20s-30\u00b0F. Layers, hat, gloves.",highlight:true},
+      {time:"10:00 PM",event:"Back to camp"}
+    ],
+    stops:[
+      {type:"fuel",name:"Kingman, AZ",mile:"mi 85",desc:"Major stop, all services"},
       {type:"food",name:"Mr. D'z Route 66 Diner",mile:"Kingman",addr:"105 E Andy Devine Ave, Kingman, AZ 86401",desc:"Turquoise building, root beer floats, burgers"},
-      {type:"shop",name:"Walmart Supercenter",mile:"Kingman",addr:"3396 Stockton Hill Rd, Kingman, AZ 86409",desc:"Midday restock for ice, drinks, snacks"},
-      {type:"note",name:"Flagstaff at 7,000 ft",desc:"April nights drop to 20s–30°F. Run the heater. Swap drivers at Kingman (~halfway)."},
-      {type:"fuel",name:"Flagstaff, AZ",mile:"mi 420",desc:"Full services"},
-      {type:"food",name:"MartAnne's Burrito Palace",mile:"Flagstaff",addr:"112 E Route 66, Flagstaff, AZ 86001",desc:"Beloved local spot. Or Brix at 413 N San Francisco St."},
-      {type:"shop",name:"Walmart Supercenter",mile:"Flagstaff",addr:"2601 E Huntington Dr, Flagstaff, AZ 86004",desc:"Full restock — near Black Bart's RV Park"},
-      {type:"sleep",name:"Black Bart's RV Park",mile:"~$40–55",addr:"2760 E Butler Ave, Flagstaff, AZ 86004",desc:"Steakhouse next door — dinner and a show",tag:"rv"},
-      {type:"sleep",name:"Woody Mountain",mile:"~$35–50",addr:"2727 W Route 66, Flagstaff, AZ 86001",desc:"Rustic, in the pines southwest of town",tag:"rv"},
-      {type:"sleep",name:"Flagstaff KOA Holiday",mile:"~$75–100",addr:"5803 N US Hwy 89, Flagstaff, AZ 86004",desc:"Full hookups, big rig friendly, cabins",tag:"rv"},
-      {type:"sleep",name:"Hotel Monte Vista",mile:"~$100–140",addr:"100 N San Francisco St, Flagstaff, AZ 86001",desc:"Historic downtown, supposedly haunted",tag:"hotel"}
+      {type:"fuel",name:"Williams, AZ",mile:"mi 170",warn:true,desc:"MUST FILL — last fuel before Grand Canyon rim"},
+      {type:"sight",name:"Grand Canyon South Rim",mile:"mi 230",addr:"Grand Canyon South Rim, AZ",desc:"$35/vehicle entry. Mather Point, Rim Trail, Yavapai Museum, Lookout Studio, Kolb Studio."},
+      {type:"food",name:"Bright Angel Lodge / El Tovar",mile:"Grand Canyon",addr:"Bright Angel Lodge, Grand Canyon Village, AZ",desc:"Lunch with canyon views — historic lodges on the rim"},
+      {type:"fuel",name:"Flagstaff, AZ",mile:"mi 310",desc:"Full services in town"},
+      {type:"food",name:"MartAnne's Burrito Palace",mile:"Flagstaff",addr:"112 E Route 66, Flagstaff, AZ 86001",desc:"Quick dinner. Or Beaver Street Brewery at 11 S Beaver St."},
+      {type:"sight",name:"Lowell Observatory",mile:"8:30 PM",addr:"Lowell Observatory, Flagstaff, AZ",desc:"Tickets purchased! Clark Telescope, open-deck observatory. Dress warm: 20s-30\u00b0F at night."},
+      {type:"note",name:"Flagstaff at 7,000 ft",desc:"Night temps in the 20s-30\u00b0F. Layers, hat, gloves for the observatory show."},
+      {type:"sleep",name:"Woody Mountain Campground",mile:"BOOKED",addr:"2727 W Route 66, Flagstaff, AZ 86001",mapUrl:"https://maps.google.com/?q=Woody+Mountain+Campground,+2727+W+Route+66,+Flagstaff,+AZ+86001",desc:"Dry RV site. No hookups. In the pines southwest of town.",tag:"rv"}
     ]
   },
   {
-    id:4, pill:"Sun 4/19", label:"Day 3 — Sunday, April 19", title:"Flagstaff → Las Cruces",
-    sub:"The warm-up day — 59°F to 78°F", miles:"~465 mi", hrs:"~7 hrs",
-    route:"I-40 E across AZ/NM → I-25 S from Albuquerque → Las Cruces",
+    id:5, pill:"Mon 4/20", label:"Day 4 — Monday, April 20", title:"Flagstaff → Manzano Mountains SP",
+    sub:"I-40 across AZ/NM to the mountains", miles:"~380 mi", hrs:"~6 hrs",
+    route:"I-40 E → ABQ → I-25 S / NM-337 / NM-55 → Manzano Mountains SP",
     weather:[
-      {city:"Flagstaff",icon:"⛅",hi:"59°F",lo:"36°F",desc:"Partly cloudy",rain:"4%"},
-      {city:"Albuquerque",icon:"⛅",hi:"73°F",lo:"55°F",desc:"Overcast",rain:"10%"},
-      {city:"Las Cruces",icon:"⛅",hi:"78°F",lo:"59°F",desc:"Overcast",rain:"8%"}
+      {city:"Flagstaff",icon:"⛅",hi:"54°F",lo:"28°F",desc:"Cool morning",rain:"5%"},
+      {city:"Albuquerque",icon:"🌤",hi:"72°F",lo:"48°F",desc:"Warm & clear",rain:"8%"},
+      {city:"Manzano",icon:"🌤",hi:"60°F",lo:"35°F",desc:"Mountain cool",rain:"10%"}
     ],
     stops:[
-      {type:"fuel",name:"Winslow, AZ",mile:"mi 60"},
+      {type:"food",name:"Tourist Home All Day Cafe",mile:"Flagstaff",addr:"Tourist Home All Day Cafe, Flagstaff, AZ",desc:"Great breakfast spot before hitting the road"},
+      {type:"fuel",name:"Winslow, AZ",mile:"mi 60",desc:"Top off, quick stop"},
       {type:"sight",name:"Standin' on the Corner",mile:"Winslow",addr:"Standin on the Corner Park, Winslow, AZ",desc:"Quick photo stop — the Eagles song"},
       {type:"food",name:"Turquoise Room at La Posada",mile:"Winslow",addr:"303 E 2nd St, Winslow, AZ 86047",desc:"Southwestern fine dining in a stunning 1929 Harvey House"},
       {type:"fuel",name:"Holbrook, AZ",mile:"mi 90",desc:"Near Petrified Forest entrance"},
       {type:"sight",name:"Petrified Forest / Painted Desert",mile:"nr Holbrook",addr:"Petrified Forest National Park, AZ",desc:"Drive through in ~1 hour off I-40. Stunning viewpoints."},
-      {type:"fuel",name:"Gallup, NM",mile:"mi 190",warn:true,desc:"Major truck stop town. Fill up."},
+      {type:"fuel",name:"Gallup, NM",mile:"mi 190",warn:true,desc:"FILL UP. Driver swap here."},
       {type:"food",name:"Jerry's Cafe",mile:"Gallup",addr:"406 W Coal Ave, Gallup, NM 87301",desc:"Smothered burritos with green chile"},
-      {type:"shop",name:"Walmart Supercenter",mile:"Gallup",addr:"1650 W Maloney Ave, Gallup, NM 87301",desc:"Quick restock near I-40"},
-      {type:"note",name:"Strong crosswinds near Gallup",desc:"Common in April. The G20 is boxy — grip the wheel. Swap drivers at Albuquerque."},
-      {type:"fuel",name:"Albuquerque, NM",mile:"mi 320",warn:true,desc:"Fill up before I-25 south"},
+      {type:"note",name:"Crosswinds near Gallup",desc:"Common in April. The G20 is boxy — grip the wheel. Driver swap at Gallup."},
+      {type:"fuel",name:"Albuquerque, NM",mile:"mi 320",desc:"Full services, fill up"},
       {type:"food",name:"Frontier Restaurant",mile:"Albuquerque",addr:"2400 Central Ave SE, Albuquerque, NM 87106",desc:"Since 1971. Famous burritos & green chile stew."},
-      {type:"sight",name:"Albuquerque Old Town",addr:"Old Town, Albuquerque, NM",desc:"30-min stop right off I-40. Beautiful plaza, adobe architecture."},
-      {type:"shop",name:"Walmart Supercenter",mile:"Albuquerque",addr:"2550 Coors Blvd NW, Albuquerque, NM 87120",desc:"Right at I-40 / Coors Blvd interchange"},
-      {type:"fuel",name:"Truth or Consequences",mile:"mi 420"},
-      {type:"sight",name:"Riverbend Hot Springs",mile:"T or C",addr:"Riverbend Hot Springs, Truth or Consequences, NM",desc:"Drop-in soaks along the Rio Grande, ~$15"},
-      {type:"food",name:"Sparky's Burgers",mile:"Hatch",addr:"115 Franklin St, Hatch, NM 87937",desc:"Legendary green chile cheeseburger"},
-      {type:"shop",name:"Walmart Supercenter",mile:"Las Cruces",addr:"571 Walton Blvd, Las Cruces, NM 88001",desc:"Full restock for last day — ice & water for West Texas"},
-      {type:"fuel",name:"Las Cruces, NM",mile:"mi 465"},
-      {type:"food",name:"La Posta de Mesilla",mile:"Las Cruces",addr:"2410 Calle de San Albino, Mesilla, NM 88046",desc:"Historic adobe restaurant, Mexican food since the 1930s"},
-      {type:"sleep",name:"Hacienda RV Resort",mile:"~$40–55",addr:"740 Stern Dr, Las Cruces, NM 88005",desc:"Highly rated, full hookups, pool",tag:"rv"},
-      {type:"sleep",name:"Sunny Acres RV Park",mile:"~$30–40",addr:"595 N Valley Dr, Las Cruces, NM 88005",desc:"Clean, affordable, good Class B reviews",tag:"rv"},
-      {type:"sleep",name:"Hotel Encanto",mile:"~$100–130",addr:"705 S Telshor Blvd, Las Cruces, NM 88011",desc:"Nice hotel with NM character",tag:"hotel"}
+      {type:"sight",name:"Old Town ABQ",addr:"Old Town, Albuquerque, NM",desc:"30-min stop right off I-40. Beautiful plaza, adobe architecture."},
+      {type:"note",name:"Road into Manzano",desc:"Narrow and winding road into the state park. Take it slow, especially at dusk."},
+      {type:"sleep",name:"Manzano Mountains State Park",mile:"BOOKED",addr:"Manzano Mountains State Park, Mountainair, NM",mapUrl:"https://maps.google.com/?q=Manzano+Mountains+State+Park,+Mountainair,+NM",desc:"Electric hookups. 7,250 ft elevation. Near Mountainair, NM.",tag:"rv"}
     ]
   },
   {
-    id:5, pill:"Mon 4/20", label:"Day 4 — Monday, April 20", title:"Las Cruces → Austin",
-    sub:"Last day — Hill Country home stretch", miles:"~450 mi", hrs:"~7 hrs",
-    route:"I-10 E (El Paso) → across West Texas → Junction → US-290 E → Austin",
+    id:6, pill:"Tue 4/21", label:"Day 5 — Tuesday, April 21", title:"Manzano → Abilene SP",
+    sub:"Longest day — flat, windy panhandle", miles:"~530 mi", hrs:"~8.5 hrs",
+    route:"NM-55 N → I-40 E → Amarillo → US-83/84 S → Abilene SP",
     weather:[
-      {city:"Las Cruces",icon:"⛅",hi:"81°F",lo:"61°F",desc:"Overcast",rain:"5%"},
-      {city:"El Paso",icon:"🌤",hi:"85°F",lo:"66°F",desc:"Overcast, dry",rain:"4%"},
-      {city:"Austin",icon:"☀️",hi:"97°F",lo:"72°F",desc:"Hot",rain:"8%"}
+      {city:"Manzano",icon:"🌤",hi:"58°F",lo:"32°F",desc:"Cool morning",rain:"5%"},
+      {city:"Amarillo",icon:"🌬",hi:"72°F",lo:"44°F",desc:"Windy, clear",rain:"8%"},
+      {city:"Abilene",icon:"☀️",hi:"82°F",lo:"58°F",desc:"Warm & sunny",rain:"5%"}
     ],
     stops:[
-      {type:"fuel",name:"El Paso, TX",mile:"mi 45",warn:true,desc:"Last major metro before deep West Texas"},
-      {type:"food",name:"L&J Cafe \"The Old Place\"",mile:"El Paso",addr:"3622 E Missouri Ave, El Paso, TX 79903",desc:"Since 1927, legendary red enchiladas & huevos rancheros"},
-      {type:"shop",name:"Walmart Supercenter",mile:"El Paso",addr:"7101 Gateway Blvd W, El Paso, TX 79925",desc:"Along I-10 — last major store before West Texas"},
-      {type:"sight",name:"El Paso Scenic Drive",addr:"El Paso Scenic Drive Overlook, El Paso, TX",desc:"Views of three states and two countries"},
-      {type:"fuel",name:"Van Horn, TX",mile:"mi 165",warn:true,desc:"Don't skip. West Texas distances are no joke."},
-      {type:"food",name:"Chuy's Restaurant",mile:"Van Horn",addr:"1200 W Broadway St, Van Horn, TX 79855",desc:"The original, not the chain — West Texas institution"},
-      {type:"note",name:"Patchy cell service",desc:"Between El Paso and Fort Stockton. I-10 limits 80 mph but G20 happier at 60–65."},
-      {type:"fuel",name:"Fort Stockton, TX",mile:"mi 285",desc:"Fill up again"},
-      {type:"sight",name:"Balmorhea State Park",mile:"nr Fort Stockton",addr:"Balmorhea State Park, Toyahvale, TX",desc:"Natural spring-fed pool, crystal-clear 72°F. Slight detour off I-10."},
-      {type:"shop",name:"Walmart Supercenter",mile:"Fort Stockton",addr:"2610 W Dickinson Blvd, Fort Stockton, TX 79735",desc:"On US-290. Ice and water for the final stretch."},
-      {type:"fuel",name:"Junction, TX",mile:"mi 420",desc:"Top off for the final leg"},
-      {type:"food",name:"Lum's BBQ",mile:"Junction",addr:"2031 Main St, Junction, TX 76849",desc:"Solid small-town Texas barbecue"},
-      {type:"food",name:"Pecan Street Brewing",mile:"Johnson City",addr:"106 E Pecan Dr, Johnson City, TX 78636",desc:"Hill Country vibes on the home stretch"},
-      {type:"sight",name:"US-290 Bluebonnets",mile:"Hill Country",desc:"April is peak season — wildflowers along the roadsides"},
-      {type:"note",name:"Welcome to Austin!",desc:"US-290 from Junction is scenic two-lane. Swap at Fort Stockton (~halfway). You made it!"}
+      {type:"fuel",name:"Santa Rosa, NM",mile:"mi 120",desc:"On I-40, full services"},
+      {type:"food",name:"Joseph's Bar & Grill",mile:"Santa Rosa",addr:"Joseph's Bar and Grill, Santa Rosa, NM",desc:"Famous green chile cheeseburger"},
+      {type:"fuel",name:"Tucumcari, NM",mile:"mi 175",desc:"Route 66 town, fuel up"},
+      {type:"food",name:"Del's Restaurant",mile:"Tucumcari",addr:"Del's Restaurant, Tucumcari, NM",desc:"Classic Route 66 diner"},
+      {type:"sight",name:"Tucumcari neon signs",mile:"Tucumcari",addr:"Tucumcari, NM",desc:"Famous Route 66 neon signs — quick photo stops along the main drag"},
+      {type:"fuel",name:"Amarillo, TX",mile:"mi 290",warn:true,desc:"FILL UP and swap drivers here"},
+      {type:"food",name:"Big Texan Steak Ranch",mile:"Amarillo",addr:"Big Texan Steak Ranch, Amarillo, TX",desc:"72-oz steak challenge. Or Tyler's BBQ for something more chill."},
+      {type:"sight",name:"Cadillac Ranch",mile:"Amarillo",addr:"Cadillac Ranch, Amarillo, TX",desc:"Free. Bring spray paint! Half-buried Cadillacs in a field."},
+      {type:"note",name:"Longest day — panhandle winds",desc:"Flat and windy. Van gets pushed. Two-lane from Amarillo south. Stay alert."},
+      {type:"fuel",name:"Lubbock / Sweetwater",mile:"mi ~430",desc:"Fuel up along the way south"},
+      {type:"food",name:"Betty Rose's Little Brisket",mile:"Abilene",addr:"Betty Rose's Little Brisket, Abilene, TX",desc:"Great brisket. Also: Jay's BBQ Shack or The Beehive."},
+      {type:"sleep",name:"Abilene State Park — Pecan Grove",mile:"BOOKED",addr:"Abilene State Park, 150 Park Rd 32, Tuscola, TX 79562",mapUrl:"https://maps.google.com/?q=Abilene+State+Park,+150+Park+Rd+32,+Tuscola,+TX+79562",desc:"Electric hookups. $5/person park entry.",tag:"rv"}
+    ]
+  },
+  {
+    id:7, pill:"Wed 4/22", label:"Day 6 — Wednesday, April 22", title:"Abilene SP → Austin",
+    sub:"Easy morning drive — home by lunch!", miles:"~200 mi", hrs:"~3 hrs",
+    route:"FM 89 → US-83 S → US-183 S → Austin",
+    weather:[
+      {city:"Abilene",icon:"🌤",hi:"80°F",lo:"56°F",desc:"Clear morning",rain:"3%"},
+      {city:"Austin",icon:"☀️",hi:"85°F",lo:"62°F",desc:"Sunny & warm",rain:"5%"}
+    ],
+    stops:[
+      {type:"fuel",name:"Brownwood, TX",mile:"mi 90",desc:"Top off for the final stretch"},
+      {type:"food",name:"Underwood's Cafeteria",mile:"Brownwood",addr:"Underwood's Cafeteria, Brownwood, TX",desc:"BBQ since 1946 — a Texas institution"},
+      {type:"sight",name:"Hill Country Bluebonnets",mile:"Hill Country",desc:"April is peak season — wildflowers along the roadsides. Pull over for photos!"},
+      {type:"note",name:"Welcome to Austin!",desc:"Easy drive through the Hill Country. Home by lunch. You made it! Celebrate!"}
     ]
   }
 ];
@@ -792,7 +857,7 @@ const PREP_GROUPS = [
   {title:"Morning: Van Pickup",items:["Complete purchase & sign paperwork","Walk through all systems with seller","Inventory what comes with the van","Adjust mirrors & seats (both drivers)","Drive around Bend 30–60 min"]},
   {title:"Afternoon: Shop & Stock",items:["Drinking water (2–3 gal)","Cooler + ice + road drinks","Road snacks (jerky, trail mix, fruit, bars)","Phone mount + 12V charger","Spare coolant (1 gal) + oil (1 qt 10W-30)","Flashlight, first aid kit, basic tools","Fill gas tank & check all 5 tires"]},
   {title:"Systems Check",items:["Heater / furnace (need it in Flagstaff)","Water pump — check for leaks","Propane: stove, water heater","Fridge (propane & 12V)","All interior & exterior lights","Locate fuse box & breaker panel"]},
-  {title:"Digital Prep",items:["Download offline maps: OR, NV, AZ, NM, TX","Save campground phone numbers","Share route & ETAs with someone at home","Confirm insurance coverage is active"]}
+  {title:"Digital Prep",items:["Download offline maps: OR, CA, NV, AZ, NM, TX","Save campground phone numbers","Share route & ETAs with someone at home","Confirm insurance coverage is active"]}
 ];
 
 const PREP_SHOPS = [
@@ -872,11 +937,11 @@ function renderDash(){
   d.stops.forEach(s=>{if(picks.includes(s)&&!seen.has(s)){seen.add(s);ordered.push(s)}});
 
   cards.innerHTML=ordered.map(s=>{
-    const href=s.addr?mapUrl(s.addr):'#';
-    const target=s.addr?'target="_blank" rel="noopener"':'';
+    const href=s.mapUrl||mapUrl(s.addr||s.name);
+    const target='target="_blank" rel="noopener"';
     const iconClass=s.type==='sleep'?'sleep':s.type;
     const warn=s.warn?`<span class="tl-stop-warn">must fill</span>`:'';
-    const tag=s.tag?`<span class="tl-stop-tag ${s.tag}">${s.tag==='rv'?'RV Park':'Hotel'}</span>`:'';
+    const tag=s.tag?`<span class="tl-stop-tag ${s.tag}">${s.tag==='rv'?'Campground':'Hotel'}</span>`:'';
     return `<a class="next-card" href="${href}" ${target}>
       <div class="nc-icon ${iconClass}">${ICONS[s.type]}</div>
       <div class="nc-body">
@@ -897,7 +962,9 @@ function renderTimeline(){
   const el=document.getElementById('timeline');
   let html='';
   DAYS.filter(d=>d.stops.length>0).forEach(d=>{
-    const dayClass=`tl-day-${d.id<=1?1:d.id<=2?1:d.id-1}`;
+    // Map day IDs to timeline dot classes: id 2=day1, 3=day2, 4=day3, 5=day4, 6=day5, 7=day6
+    const dayNum=d.id<=1?1:d.id-1;
+    const dayClass=`tl-day-${dayNum}`;
     html+=`<div class="tl-day-header ${dayClass}">
       <div class="tl-day-dot"></div>
       <div class="tl-day-info">
@@ -906,20 +973,36 @@ function renderTimeline(){
       </div>
       ${d.miles?`<div class="tl-day-miles">${d.miles}</div>`:''}
     </div>`;
+
+    // Timed schedule (Day 3 — Grand Canyon)
+    if(d.timedSchedule && d.schedule){
+      html+=`<div class="tl-timed-schedule"><h4>Timed Schedule</h4>`;
+      d.schedule.forEach(s=>{
+        html+=`<div class="tl-timed-item${s.highlight?' highlight':''}">
+          <span class="tl-time">${s.time}</span>
+          <span class="tl-event">${s.event}</span>
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+
     html+=`<div class="tl-stops">`;
     d.stops.forEach((s,i)=>{
       const warn=s.warn?`<span class="tl-stop-warn">must fill</span>`:'';
-      const tag=s.tag?`<span class="tl-stop-tag ${s.tag}">${s.tag==='rv'?'RV Park':'Hotel'}</span>`:'';
-      html+=`<div class="tl-stop ${s.type}" data-idx="${d.id}-${i}">
+      const tag=s.tag?`<span class="tl-stop-tag ${s.tag}">${s.tag==='rv'?'Campground':'Hotel'}</span>`:'';
+      const mapQuery=s.addr||s.name;
+      const mapHref=s.mapUrl||mapUrl(mapQuery);
+      html+=`<div class="tl-stop ${s.type}" data-idx="${d.id}-${i}" data-map="${mapHref}">
         <div class="tl-stop-head">
           <span class="tl-stop-icon">${ICONS[s.type]}</span>
           <span class="tl-stop-name">${s.name}${warn}</span>
           ${s.mile?`<span class="tl-stop-mile">${s.mile}</span>`:''}
+          <a class="tl-stop-mapbtn" href="${mapHref}" target="_blank" rel="noopener" onclick="event.stopPropagation()">📍</a>
           <span class="tl-stop-chevron">›</span>
         </div>
         <div class="tl-stop-body">
           ${s.desc?`<div class="tl-stop-desc">${s.desc}</div>`:''}
-          ${s.addr?addrLink(s.addr):''}
+          ${s.mapUrl?`<a class="tl-stop-addr" href="${s.mapUrl}" target="_blank" rel="noopener"><i class="pin" style="font-style:normal">📍</i>Open in Maps</a>`:addrLink(s.addr||s.name,s.addr||'Open in Maps')}
           ${tag}
         </div>
       </div>`;
@@ -983,14 +1066,15 @@ function renderMaps(){
 
   // Google Maps offline area links (centered on key regions)
   const regions=[
-    {name:"Central Oregon",sub:"Bend → Burns",coords:"43.5,-120.5,8",critical:false},
-    {name:"Northern Nevada",sub:"Burns → Winnemucca → Ely",coords:"40.8,-117.0,7",critical:true,warn:"No cell service ~200 mi"},
-    {name:"Southern Nevada",sub:"Ely → Caliente → Vegas bypass",coords:"37.5,-115.0,8",critical:false},
-    {name:"Northern Arizona",sub:"Kingman → Flagstaff",coords:"35.5,-112.5,8",critical:false},
-    {name:"AZ / NM Border",sub:"Flagstaff → Winslow → Gallup",coords:"35.2,-109.5,8",critical:false},
-    {name:"Central New Mexico",sub:"Albuquerque → T or C → Las Cruces",coords:"33.5,-106.5,8",critical:false},
-    {name:"West Texas",sub:"El Paso → Van Horn → Fort Stockton",coords:"31.0,-104.5,7",critical:true,warn:"Patchy cell service ~250 mi"},
-    {name:"Texas Hill Country",sub:"Junction → Johnson City → Austin",coords:"30.5,-98.5,8",critical:false}
+    {name:"Central Oregon",sub:"Bend → La Pine → Lakeview",coords:"43.0,-121.0,8",critical:false},
+    {name:"NE California / NW Nevada",sub:"Lakeview → Susanville → Yerington",coords:"40.5,-119.5,8",critical:true,warn:"Spotty cell on US-395"},
+    {name:"Central Nevada",sub:"Yerington → Hawthorne → Tonopah → Beatty",coords:"38.5,-117.5,7",critical:true,warn:"Spotty cell Tonopah → Beatty"},
+    {name:"Southern Nevada",sub:"Beatty → Boulder City → Lake Mead",coords:"36.5,-115.5,8",critical:false},
+    {name:"NW Arizona",sub:"Kingman → Williams → Grand Canyon → Flagstaff",coords:"35.5,-112.0,8",critical:false},
+    {name:"AZ / NM Border",sub:"Flagstaff → Winslow → Gallup → ABQ",coords:"35.2,-109.5,8",critical:false},
+    {name:"Central New Mexico",sub:"ABQ → Manzano Mountains → Santa Rosa",coords:"34.5,-106.0,8",critical:false},
+    {name:"TX Panhandle / West TX",sub:"Tucumcari → Amarillo → Abilene",coords:"33.5,-101.0,7",critical:false},
+    {name:"Central Texas",sub:"Abilene → Brownwood → Austin",coords:"31.5,-98.5,8",critical:false}
   ];
 
   function gMapsLink(coords){
@@ -1013,7 +1097,7 @@ function renderMaps(){
       </div>
       <div class="map-tip">
         <span class="tip-icon">⚠️</span>
-        <div><strong>Do this on Wi-Fi before you leave Bend.</strong> Each download is 50–150 MB. You need all 8 regions to cover the full route.</div>
+        <div><strong>Do this on Wi-Fi before you leave Bend.</strong> Each download is 50–150 MB. You need all 9 regions to cover the full route.</div>
       </div>
     </div>
 
@@ -1041,44 +1125,60 @@ function renderMaps(){
     </div>`;
 
   // Day 1 strip map
-  html+=stripMap("Day 1: Bend → Ely",[
+  html+=stripMap("Day 1: Bend → Walker River SRA",[
     {name:"Bend",mi:0},
-    {name:"Burns",mi:130,icon:"⛽",warn:true},
-    {name:"Orovada",mi:340,icon:"⛽"},
-    {name:"Winnemucca",mi:420,icon:"⛽🍽🛒"},
-    {name:"Ely",mi:500,icon:"⛽🌙"}
-  ],"⚠ No cell service Burns → Winnemucca (~200 mi)");
+    {name:"La Pine",mi:30,icon:"⛽"},
+    {name:"Lakeview",mi:180,icon:"⛽🍽",warn:true},
+    {name:"Susanville",mi:280,icon:"⛽🍽"},
+    {name:"Yerington",mi:360,icon:"⛽"},
+    {name:"Walker R.",mi:370,icon:"🌙"}
+  ],"⚠ Watch for deer on US-395");
 
   // Day 2 strip map
-  html+=stripMap("Day 2: Ely → Flagstaff",[
-    {name:"Ely",mi:0},
-    {name:"Caliente",mi:100,icon:"⛽🍽"},
-    {name:"Alamo",mi:170,icon:"⛽"},
-    {name:"Vegas bypass",mi:270,icon:"⛽"},
-    {name:"Kingman",mi:320,icon:"⛽🍽🛒"},
-    {name:"Flagstaff",mi:420,icon:"⛽🍽🌙"}
-  ]);
+  html+=stripMap("Day 2: Walker River → Boulder Beach",[
+    {name:"Yerington",mi:0},
+    {name:"Hawthorne",mi:70,icon:"⛽🍽"},
+    {name:"Tonopah",mi:190,icon:"⛽🍽⭐",warn:true},
+    {name:"Beatty",mi:280,icon:"⛽"},
+    {name:"Boulder City",mi:380,icon:"⛽🍽"},
+    {name:"Boulder Bch",mi:400,icon:"🌙"}
+  ],"⚠ Spotty cell Tonopah → Beatty — don't go below half tank");
 
   // Day 3 strip map
-  html+=stripMap("Day 3: Flagstaff → Las Cruces",[
+  html+=stripMap("Day 3: Boulder Beach → Grand Canyon → Flagstaff",[
+    {name:"Boulder Bch",mi:0},
+    {name:"Kingman",mi:85,icon:"⛽🍽"},
+    {name:"Williams",mi:170,icon:"⛽",warn:true},
+    {name:"Grand Cyn",mi:230,icon:"⭐🍽"},
+    {name:"Flagstaff",mi:330,icon:"⛽🍽🌙"}
+  ],"⭐ Grand Canyon 12-4:30 PM + Lowell Observatory 8:30 PM");
+
+  // Day 4 strip map
+  html+=stripMap("Day 4: Flagstaff → Manzano Mountains SP",[
     {name:"Flagstaff",mi:0},
     {name:"Winslow",mi:60,icon:"⛽🍽⭐"},
     {name:"Holbrook",mi:90,icon:"⛽"},
-    {name:"Gallup",mi:190,icon:"⛽🍽🛒",warn:true},
-    {name:"ABQ",mi:320,icon:"⛽🍽🛒",warn:true},
-    {name:"T or C",mi:420,icon:"⛽"},
-    {name:"Las Cruces",mi:465,icon:"⛽🍽🌙"}
-  ],"⚠ Strong crosswinds near Gallup");
+    {name:"Gallup",mi:190,icon:"⛽🍽",warn:true},
+    {name:"ABQ",mi:320,icon:"⛽🍽⭐"},
+    {name:"Manzano",mi:380,icon:"🌙"}
+  ],"⚠ Crosswinds near Gallup · Narrow road into Manzano");
 
-  // Day 4 strip map
-  html+=stripMap("Day 4: Las Cruces → Austin",[
-    {name:"Las Cruces",mi:0},
-    {name:"El Paso",mi:45,icon:"⛽🍽🛒",warn:true},
-    {name:"Van Horn",mi:165,icon:"⛽🍽",warn:true},
-    {name:"Ft Stockton",mi:285,icon:"⛽🛒"},
-    {name:"Junction",mi:420,icon:"⛽🍽"},
-    {name:"Austin",mi:450,icon:"🏠"}
-  ],"⚠ Patchy cell El Paso → Fort Stockton (~240 mi)");
+  // Day 5 strip map
+  html+=stripMap("Day 5: Manzano → Abilene SP",[
+    {name:"Manzano",mi:0},
+    {name:"Santa Rosa",mi:120,icon:"⛽🍽"},
+    {name:"Tucumcari",mi:175,icon:"⛽🍽⭐"},
+    {name:"Amarillo",mi:290,icon:"⛽🍽⭐",warn:true},
+    {name:"Sweetwater",mi:430,icon:"⛽"},
+    {name:"Abilene SP",mi:530,icon:"🌙"}
+  ],"⚠ Longest day — flat, windy panhandle. Van gets pushed.");
+
+  // Day 6 strip map
+  html+=stripMap("Day 6: Abilene SP → Austin",[
+    {name:"Abilene SP",mi:0},
+    {name:"Brownwood",mi:90,icon:"⛽🍽"},
+    {name:"Austin",mi:200,icon:"🏠"}
+  ],"🌸 Hill Country bluebonnets — home by lunch!");
 
   document.getElementById('mapsContent').innerHTML=html;
 }
@@ -1145,36 +1245,47 @@ function renderInfo(){
     <div class="info-section">
       <h3>Trip Overview</h3>
       <div class="trip-stats">
-        <div class="trip-stat"><div class="ts-num">1,835</div><div class="ts-label">Miles</div></div>
-        <div class="trip-stat"><div class="ts-num">4</div><div class="ts-label">Driving Days</div></div>
+        <div class="trip-stat"><div class="ts-num">2,160</div><div class="ts-label">Miles</div></div>
+        <div class="trip-stat"><div class="ts-num">6</div><div class="ts-label">Driving Days</div></div>
         <div class="trip-stat"><div class="ts-num">6</div><div class="ts-label">States</div></div>
-        <div class="trip-stat"><div class="ts-num">~29</div><div class="ts-label">Hours</div></div>
+        <div class="trip-stat"><div class="ts-num">~34</div><div class="ts-label">Hours</div></div>
       </div>
       <div style="text-align:center;padding:0.5rem;background:var(--card);border-radius:10px;margin-top:0.5rem">
         <div style="font-size:0.85rem;font-weight:600">1993 Chevy G20 Horizon</div>
         <div style="font-size:0.72rem;color:var(--dim)">5.7L V8 · Class B · ~12 MPG</div>
+        <div style="font-size:0.6rem;color:var(--dim);margin-top:0.2rem;font-family:'Space Mono',monospace">VIN: 1GBEG25K7PF326199</div>
       </div>
     </div>
     <div class="info-section">
       <h3>Estimated Budget</h3>
       <div class="budget-grid">
-        <div class="budget-cell"><div class="b-num">$535</div><div class="b-label">Fuel (~153 gal)</div></div>
-        <div class="budget-cell"><div class="b-num">$150–350</div><div class="b-label">Lodging (3 nights)</div></div>
-        <div class="budget-cell"><div class="b-num">$150–250</div><div class="b-label">Food (4 days)</div></div>
-        <div class="budget-cell"><div class="b-num">$100–200</div><div class="b-label">Supplies</div></div>
-        <div class="budget-cell total"><div class="b-num">$935–1,335</div><div class="b-label">Total (excl. van)</div></div>
+        <div class="budget-cell"><div class="b-num">$630</div><div class="b-label">Fuel (~180 gal)</div></div>
+        <div class="budget-cell"><div class="b-num">$150–300</div><div class="b-label">Camping (5 nights)</div></div>
+        <div class="budget-cell"><div class="b-num">$200–350</div><div class="b-label">Food (6 days)</div></div>
+        <div class="budget-cell"><div class="b-num">$100–200</div><div class="b-label">Supplies + Entry Fees</div></div>
+        <div class="budget-cell total"><div class="b-num">$1,080–1,480</div><div class="b-label">Total (excl. van)</div></div>
+      </div>
+    </div>
+    <div class="info-section">
+      <h3>Highlights</h3>
+      <div style="padding:0.5rem 0">
+        <div style="display:flex;gap:0.5rem;align-items:center;padding:0.4rem 0"><span>🏜</span><span style="font-size:0.85rem">Grand Canyon South Rim (Day 3)</span></div>
+        <div style="display:flex;gap:0.5rem;align-items:center;padding:0.4rem 0"><span>🔭</span><span style="font-size:0.85rem">Lowell Observatory, Flagstaff (Day 3)</span></div>
+        <div style="display:flex;gap:0.5rem;align-items:center;padding:0.4rem 0"><span>🏨</span><span style="font-size:0.85rem">Mizpah Hotel, Tonopah — 1907 (Day 2)</span></div>
+        <div style="display:flex;gap:0.5rem;align-items:center;padding:0.4rem 0"><span>🚗</span><span style="font-size:0.85rem">Cadillac Ranch, Amarillo (Day 5)</span></div>
+        <div style="display:flex;gap:0.5rem;align-items:center;padding:0.4rem 0"><span>🌸</span><span style="font-size:0.85rem">Hill Country Bluebonnets (Day 6)</span></div>
       </div>
     </div>
     <div class="info-section">
       <h3>Carry-On Packing</h3>
-      <p style="font-size:0.75rem;color:var(--dim);margin-bottom:0.75rem">No checked bag — 6 days: Wed night → Monday</p>
-      <div class="pack-cat"><h4>Clothes</h4><ul><li>4 t-shirts / tops</li><li>2 pairs pants or shorts</li><li>1 light jacket or hoodie</li><li>5 pairs underwear + socks</li><li>Driving shoes (wear on plane)</li><li>Flip flops / sandals</li><li>Pajamas · Sunglasses · Hat</li></ul></div>
+      <p style="font-size:0.75rem;color:var(--dim);margin-bottom:0.75rem">No checked bag — 8 days: Wed night → Wednesday</p>
+      <div class="pack-cat"><h4>Clothes</h4><ul><li>5 t-shirts / tops</li><li>2 pairs pants + 1 shorts</li><li>1 warm jacket + 1 light hoodie</li><li>6 pairs underwear + socks</li><li>Driving shoes (wear on plane)</li><li>Flip flops / sandals</li><li>Pajamas · Sunglasses · Hat</li><li>Warm layers for Flagstaff (20s-30°F nights)</li><li>Hat + gloves for Lowell Observatory</li></ul></div>
       <div class="pack-cat"><h4>Toiletries (TSA 3-1-1)</h4><ul><li>Travel toothpaste, deodorant, shampoo</li><li>Toothbrush · Sunscreen · Lip balm w/ SPF</li><li>Medications (original bottles)</li></ul></div>
       <div class="pack-cat"><h4>Electronics</h4><ul><li>Phone + charger + wall adapter</li><li>Portable battery (carry-on only)</li><li>Headphones · Camera if desired</li></ul></div>
-      <div class="pack-cat"><h4>Documents</h4><ul><li>ID / driver's license</li><li>Insurance docs · Title / purchase paperwork</li><li>Cards + ~$200 cash · AAA card</li></ul></div>
+      <div class="pack-cat"><h4>Documents</h4><ul><li>ID / driver's license</li><li>Insurance docs · Title / purchase paperwork</li><li>Cards + ~$200 cash · AAA card</li><li>Lowell Observatory tickets (digital)</li></ul></div>
     </div>
     <div style="text-align:center;padding:2rem 1.5rem;font-family:'Space Mono',monospace;font-size:0.6rem;color:rgba(255,248,240,0.2)">
-      Bend → Ely → Flagstaff → Las Cruces → Austin<br>April 15–20, 2026
+      Bend → Walker River → Lake Mead → Grand Canyon → Flagstaff → Manzano → Abilene → Austin<br>April 15–22, 2026
     </div>`;
 }
 
@@ -1206,7 +1317,8 @@ document.querySelectorAll('.bottom-nav button').forEach(btn=>{
   const now=new Date();
   const dates=[
     new Date(2026,3,15),new Date(2026,3,16),new Date(2026,3,17),
-    new Date(2026,3,18),new Date(2026,3,19),new Date(2026,3,20)
+    new Date(2026,3,18),new Date(2026,3,19),new Date(2026,3,20),
+    new Date(2026,3,21),new Date(2026,3,22)
   ];
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   for(let i=dates.length-1;i>=0;i--){

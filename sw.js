@@ -1,4 +1,4 @@
-const CACHE_NAME = 'road-trip-v1';
+const CACHE_NAME = 'road-trip-v2';
 const PRECACHE_URLS = ['/road-trip/', '/road-trip/index.html', '/road-trip/manifest.json'];
 
 // Install: precache core assets
