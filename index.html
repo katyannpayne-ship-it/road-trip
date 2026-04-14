@@ -411,6 +411,30 @@ a{color:inherit;text-decoration:none}
 .van-stars span:nth-child(5){top:12px;left:28%;animation-delay:2.4s}
 @keyframes twinkle{0%,100%{opacity:0.2}50%{opacity:0.8}}
 
+/* ===== FULL ROUTE MAP BUTTON ===== */
+.route-map-fab{
+  position:fixed;
+  bottom:calc(62px + var(--safe-b));
+  right:1rem;
+  z-index:150;
+  display:flex;align-items:center;gap:0.5rem;
+  padding:0.65rem 1.1rem;
+  background:linear-gradient(135deg,var(--gold),#b8922e);
+  color:var(--night);
+  font-family:'Space Mono',monospace;
+  font-size:0.68rem;font-weight:700;
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  border:none;border-radius:100px;
+  box-shadow:0 4px 16px rgba(212,168,67,0.35);
+  cursor:pointer;
+  text-decoration:none;
+  transition:transform 0.15s,box-shadow 0.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.route-map-fab:active{transform:scale(0.95);box-shadow:0 2px 8px rgba(212,168,67,0.25)}
+.route-map-fab .fab-icon{font-size:1.1rem;line-height:1}
+
 /* cactus scenery */
 .van-cactus{
   position:absolute;bottom:15px;font-size:1.2rem;
@@ -680,6 +704,8 @@ a{color:inherit;text-decoration:none}
 </div>
 
 <!-- ===== BOTTOM NAV ===== -->
+<a class="route-map-fab" href="https://www.google.com/maps/dir/Bend,+Oregon/Walker+River+State+Recreation+Area,+Yerington,+NV/Boulder+Beach+Campground,+Boulder+City,+NV/Grand+Canyon+South+Rim,+AZ/Flagstaff,+AZ/Manzano+Mountains+State+Park,+Mountainair,+NM/Abilene+State+Park,+Tuscola,+TX/Austin,+TX" target="_blank"><span class="fab-icon">&#x1F5FA;</span> Full Route Map</a>
+
 <nav class="bottom-nav">
   <button class="active" data-view="viewDash"><span class="nav-icon">&#9673;</span>Home</button>
   <button data-view="viewTimeline"><span class="nav-icon">&#9474;</span>Timeline</button>
